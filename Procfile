@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar -Dspring.profiles.active=prod -javaagent:/newrelic/newrelic.jar target/hellocine-1.0-SNAPSHOT.jar
+web: java $JAVA_OPTS -jar -Dspring.profiles.active=prod -javaagent:newrelic/newrelic.jar target/hellocine-1.0-SNAPSHOT.jar
