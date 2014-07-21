@@ -35,6 +35,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -47,10 +49,15 @@ import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -60,6 +67,8 @@ import java.util.Collections;
 @ComponentScan
 @EnableAutoConfiguration
 public class MovieTimeApplication implements CommandLineRunner {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MovieTimeApplication.class);
 
     @Autowired
     private MovieTimeConfiguration configuration;
@@ -75,6 +84,7 @@ public class MovieTimeApplication implements CommandLineRunner {
         //load bugsnag
         if (!Strings.isNullOrEmpty(configuration.getBugSnag())) {
             Client bugsnag = new Client(configuration.getBugSnag());
+            LOG.info("BugSnag loaded");
         }
     }
 
@@ -145,17 +155,18 @@ public class MovieTimeApplication implements CommandLineRunner {
     }
 
     private RestTemplate setInterceptor(RestTemplate restTemplate) {
-        restTemplate.setInterceptors(Collections.singletonList(
-                (request, body, execution) -> {
-                    HttpHeaders headers = request.getHeaders();
-                    //headers.add("User-Agent", "AlloCine/2.9.5 CFNetwork/548.1.4 Darwin/11.0.0");
-                    //headers.add("User-Agent", "Dalvik/1.6.0 (Linux; U; Android 4.2.2; Nexus 4 Build/JDQ39E)");
-                    //headers.add("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19");
-                    headers.add("User-Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5");
-                    //headers.add("User-Agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10");
-                    return execution.execute(request, body);
-                }
-        ));
+        restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(new ClientHttpRequestInterceptor() {
+            @Override
+            public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+                HttpHeaders headers = request.getHeaders();
+                //headers.add("User-Agent", "AlloCine/2.9.5 CFNetwork/548.1.4 Darwin/11.0.0");
+                //headers.add("User-Agent", "Dalvik/1.6.0 (Linux; U; Android 4.2.2; Nexus 4 Build/JDQ39E)");
+                //headers.add("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19");
+                headers.add("User-Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5");
+                //headers.add("User-Agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10");
+                return execution.execute(request, body);
+            }
+        }));
         return restTemplate;
     }
 

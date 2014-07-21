@@ -17,6 +17,7 @@
 package com.glagsoft.movietime.integration.allocine.core;
 
 import com.google.common.base.Joiner;
+import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +27,11 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.List;
+
+//import java.util.Base64;
+
+//import java.util.Base64;
 
 /**
  * Utility class to create a signed allo cine request.
@@ -109,7 +113,7 @@ public class AlloCineRequest {
             //do the hashing
             final MessageDigest md = MessageDigest.getInstance("SHA1");
             md.update(toDigest.getBytes());
-            final String sig = Base64.getEncoder().encodeToString(md.digest());
+            final String sig = Base64.encodeBase64String(md.digest());
 
             //encode and return the sig url parameter
             return String.format("&sig=%s", URLEncoder.encode(sig, "UTF-8"));
