@@ -1,0 +1,12 @@
+app:
+  mode: development
+  version: ${pom.version}
+  bugSnag:
+  es:
+
+mongo:
+  url: mongodb://localhost/hellocinedb
+
+httpClient:
+  readTimeOut: 5000
+  connectTimeout: 2000

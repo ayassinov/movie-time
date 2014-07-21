@@ -1,0 +1,5 @@
+app:
+  mode: test
+
+mongo:
+  url: mongodb://localhost/test
