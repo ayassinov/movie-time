@@ -27,7 +27,7 @@
     </parent>
 
     <groupId>com.glagsoft</groupId>
-    <artifactId>hellocine</artifactId>
+    <artifactId>movietime</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
