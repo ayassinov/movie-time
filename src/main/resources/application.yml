@@ -10,3 +10,32 @@ mongo:
 httpClient:
   readTimeOut: 5000
   connectTimeout: 2000
+
+endpoints:
+  beans:
+    id: springbeans
+    sensitive: false
+    enabled: true
+  jolokia:
+    enabled: true
+
+info:
+  build:
+    artifact: ${project.artifactId}
+    name: ${project.name}
+    description: ${project.description}
+    version: ${project.version}
+
+security:
+  user:
+    name: admin
+    password: secret
+
+management:
+  security:
+    role: SUPERUSER
+  context-path: /manage
+
+jolokia:
+  config:
+    debug: true

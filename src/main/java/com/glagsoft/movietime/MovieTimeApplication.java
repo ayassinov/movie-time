@@ -17,6 +17,7 @@
 package com.glagsoft.movietime;
 
 import com.bugsnag.Client;
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -84,9 +85,19 @@ public class MovieTimeApplication implements CommandLineRunner {
         //load bugsnag
         if (!Strings.isNullOrEmpty(configuration.getBugSnag())) {
             Client bugsnag = new Client(configuration.getBugSnag());
+            bugsnag.notify(new RuntimeException("Non-fatal"));
             LOG.info("BugSnag loaded");
         }
     }
+
+
+    @Bean
+    public MetricRegistry getMetrics() {
+        final MetricRegistry metrics = new MetricRegistry();
+
+        return metrics;
+    }
+
 
     /**
      * Configure Jackson mapper with our preferences
