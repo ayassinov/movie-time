@@ -54,4 +54,7 @@ $RECYCLE.BIN/
 target/
 *.iml
 src/main/resources/git.properties
+<<<<<<< HEAD
 src/main/resources/application-proxy.yml
+=======
+>>>>>>> master
