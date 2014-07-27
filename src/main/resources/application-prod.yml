@@ -1,11 +1,8 @@
 app:
-  mode: production
+  mode: PROD
   bugSnag: 16f3943bcff62960d25dcf14053efb98
-  es: https://bf4bay8g:21p8huoxv8kc13y4@apple-5840.eu-west-1.bonsai.io:443/
-
-mongo:
-  url: mongodb://heroku:5cfc057727158f803cf7aed61c6422d0@lennon.mongohq.com:10023/app27658792
-
-httpClient:
-  readTimeOut: 2000
-  connectTimeout: 2000
+  esUrl: https://bf4bay8g:21p8huoxv8kc13y4@apple-5840.eu-west-1.bonsai.io:443/
+  mongoUrl: mongodb://heroku:5cfc057727158f803cf7aed61c6422d0@lennon.mongohq.com:10023/app27658792
+  client:
+    readTimeOut: 2000
+    connectTimeout: 2000

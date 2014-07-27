@@ -1,5 +1,3 @@
 app:
-  mode: test
-
-mongo:
-  url: mongodb://localhost/test
+  mode: TEST
+  mongoUrl: mongodb://localhost/test

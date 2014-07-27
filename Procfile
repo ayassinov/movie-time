@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar -Dserver.port=$PORT -Dspring.profiles.active=prod -javaagent:newrelic/newrelic.jar target/movietime-1.0-SNAPSHOT.jar
+web: java $JAVA_OPTS -jar -Dserver.port=$PORT -Dspring.profiles.active=production -javaagent:target/newrelic.jar target/movietime.jar
