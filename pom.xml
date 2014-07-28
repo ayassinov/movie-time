@@ -210,11 +210,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!-- get last git commits information -->
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-            </plugin>
             <!--unzip new relic agent  -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
