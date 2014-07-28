@@ -53,3 +53,5 @@ $RECYCLE.BIN/
 .idea/
 target/
 *.iml
+src/main/resources/git.properties
+src/main/resources/application-proxy.yml

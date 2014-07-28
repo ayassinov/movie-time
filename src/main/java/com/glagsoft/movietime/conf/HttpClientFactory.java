@@ -6,21 +6,11 @@ import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.util.Collections;
 
 /**
  * @author ayassinov on 28/07/2014.
@@ -65,7 +55,7 @@ public class HttpClientFactory {
                 new NTCredentials(config.getUserName(), config.getPassword(), null, null)
         );
         clientBuilder.useSystemProperties();
-        clientBuilder.setProxy(new HttpHost("server", config.getPort()));
+        clientBuilder.setProxy(new HttpHost(config.getServer(), config.getPort()));
         clientBuilder.setDefaultCredentialsProvider(credProvider);
         clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
     }

@@ -17,10 +17,11 @@
 package com.glagsoft.movietime.conf;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,23 +31,25 @@ import javax.validation.constraints.NotNull;
  * @author ayassinov on 18/07/14
  */
 @Getter
+@Setter
 @Component
-@Profile(value = {"dev", "prod"})
+@ToString
 @ConfigurationProperties(prefix = "app")
 public class ApplicationConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationConfig.class);
 
-    //@NotNull
-    // private RunModeEnum mode;
+    @NotNull(message = "Running Mode is one of (DEV,PROD,TEST)")
+    private RunModeEnum mode;
 
-    @NotNull
+    @NotNull(message = "Version cannot be null or empty")
     private String version;
 
     @NotNull(message = "Mongo url configuration should not be null or empty")
     private String mongoUrl;
 
-    //private HttpClientConfig client;
+    @NotNull(message = "http client configuration is mandatory")
+    private HttpClientConfig client;
 
     private String bugSnag = null;
 
@@ -54,6 +57,6 @@ public class ApplicationConfig {
 
     @PostConstruct
     public void postConstruct() {
-        LOG.info("Configuration Loaded in mode [{}] and version [{}]", null, getVersion());
+        LOG.info("Movie Time Configuration loaded successfully with this parameters: [{}]", toString());
     }
 }

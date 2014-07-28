@@ -24,10 +24,10 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.glagsoft.movietime.conf.ApplicationConfig;
 import com.glagsoft.movietime.conf.HttpClientFactory;
+import com.glagsoft.movietime.conf.RunModeEnum;
 import com.glagsoft.movietime.core.jackson.FuzzyEnumModule;
 import com.glagsoft.movietime.core.jackson.GuavaExtrasModule;
 import com.glagsoft.movietime.core.jackson.MovieTimeJsonMapper;
-import com.google.common.base.Strings;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import org.slf4j.Logger;
@@ -36,13 +36,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -51,7 +53,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
-//@ActiveProfiles(profiles = "dev")
 public class MovieTimeApplication implements CommandLineRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovieTimeApplication.class);
@@ -61,28 +62,37 @@ public class MovieTimeApplication implements CommandLineRunner {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(MovieTimeApplication.class, args);
-
-
     }
 
     @Override
     public void run(String... args) throws Exception {
-        //load bugsnag
-        if (!Strings.isNullOrEmpty(configuration.getBugSnag())) {
-            Client bugsnag = new Client(configuration.getBugSnag());
-            bugsnag.notify(new RuntimeException("Non-fatal"));
-            LOG.info("BugSnag loaded");
-        }
     }
 
-
     @Bean
+    @Scope(value = "singleton")
     public MetricRegistry getMetrics() {
         final MetricRegistry metrics = new MetricRegistry();
 
         return metrics;
     }
 
+    /**
+     * Create a BugSnag Client, we rely on the configuration URL to create this object
+     *
+     * @return BugSnag Client
+     */
+    @Bean
+    @Scope(value = "singleton")
+    public Client getBugSnagClient() {
+        Client bugSnag = new Client(configuration.getBugSnag());
+        //set the current version
+        bugSnag.setAppVersion(configuration.getVersion());
+        //set the current release stage
+        bugSnag.setReleaseStage(configuration.getMode().toString());
+        //notify about exception only in production mode;
+        bugSnag.setNotifyReleaseStages(RunModeEnum.PROD.toString());
+        return bugSnag;
+    }
 
     /**
      * Configure Jackson mapper with our preferences
@@ -96,6 +106,11 @@ public class MovieTimeApplication implements CommandLineRunner {
         return jsonMapper;
     }
 
+    /**
+     * Return an Jackson Object Mapper to convert from/to Java Object to JsonNode types.
+     *
+     * @return Object mapper
+     */
     @Bean
     public ObjectMapper objectMapper() {
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -107,6 +122,10 @@ public class MovieTimeApplication implements CommandLineRunner {
         return objectMapper;
     }
 
+    /**
+     * @return MongoDB factory to get a mongo client connection.
+     * @throws Exception When the URL mongo server is empty/null or Malformed
+     */
     @Bean
     @Scope(value = "singleton")
     public MongoDbFactory mongoDbFactory() throws Exception {
@@ -118,16 +137,25 @@ public class MovieTimeApplication implements CommandLineRunner {
         return new SimpleMongoDbFactory(mongoClient, mongoClientURI.getDatabase());
     }
 
+    /**
+     * @return Spring Mongo Template
+     * @throws Exception if the MongoDB factory creation was not successfully
+     */
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
         return new MongoTemplate(mongoDbFactory());
     }
 
+    /**
+     * Create a REST template to call an external API
+     *
+     * @return Spring REST template
+     */
     @Bean
     public RestTemplate restTemplate() {
         //get HttpFactory
         final HttpComponentsClientHttpRequestFactory factory =
-                HttpClientFactory.INSTANCE.getRequestFactory(/*configuration.getClient()*/ null);
+                HttpClientFactory.INSTANCE.getRequestFactory(configuration.getClient());
 
         return new RestTemplate(factory);
     }

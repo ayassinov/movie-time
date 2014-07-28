@@ -17,25 +17,27 @@
 package com.glagsoft.movietime.conf;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author ayassinov
  */
 @Getter
-//@Component
-//@Profile(value = {"dev", "prod"})
-//@ConfigurationProperties(prefix = "app.client")
+@Setter
+@ToString
 public class HttpClientConfig {
 
+    @NotNull(message = "Read timeout cannot be null")
     private int readTimeOut;
 
+    @NotNull(message = "Connection timeout cannot be null")
     private int connectTimeout;
 
-    @NotEmpty
+    @NotEmpty(message = "User agent cannot be null or empty")
     private String userAgent;
 
     private ProxyConfig proxy;

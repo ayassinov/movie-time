@@ -16,12 +16,26 @@
 
 package com.glagsoft.movietime.conf;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author ayassinov
  */
 public enum RunModeEnum {
 
-    DEV, PROD, TEST
+    DEV, PROD, TEST;
+
+    public String toString() {
+
+        switch (this) {
+            case DEV:
+                return "development";
+            case PROD:
+                return "production";
+            case TEST:
+                return "test";
+            default:
+                throw new EnumConstantNotPresentException(RunModeEnum.class, this.name());
+        }
+    }
+
+
 }

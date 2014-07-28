@@ -24,8 +24,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * @author ayassinov on 17/07/14
  */
-@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("test")
 @SpringApplicationConfiguration(classes = MovieTimeApplication.class)
 public abstract class BaseTest {
 }

@@ -17,21 +17,26 @@
 package com.glagsoft.movietime.conf;
 
 import lombok.Getter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author ayassinov
  */
 @Getter
-@Component
+@Setter
 @Profile("proxy")
-//@ConfigurationProperties(prefix = "app.client.proxy")
+@ToString(exclude = "password")
 public class ProxyConfig {
 
+    @NotEmpty(message = "Server cannot be null or empty")
     private String server;
 
+    @NotNull(message = "The proxy server port number is mandatory")
     private int port;
 
     private String userName;
