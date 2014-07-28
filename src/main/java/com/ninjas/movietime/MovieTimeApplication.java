@@ -18,17 +18,19 @@ package com.ninjas.movietime;
 
 import com.bugsnag.Client;
 import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.librato.metrics.LibratoReporter;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.ninjas.movietime.conf.ApplicationConfig;
+import com.ninjas.movietime.conf.GraphiteConfig;
 import com.ninjas.movietime.conf.HttpClientFactory;
-import com.ninjas.movietime.conf.LibratoConfig;
 import com.ninjas.movietime.conf.RunModeEnum;
 import com.ninjas.movietime.core.jackson.FuzzyEnumModule;
 import com.ninjas.movietime.core.jackson.GuavaExtrasModule;
@@ -50,6 +52,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -79,24 +82,29 @@ public class MovieTimeApplication implements CommandLineRunner {
     }
 
     private void configureMetrics() {
-        //set librato console reporter
-        final ConsoleReporter reporter = ConsoleReporter.forRegistry(registry)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.start(1, TimeUnit.MINUTES);
+        //set console reporter only on dev mode
+        if (configuration.getMode().equals(RunModeEnum.DEV)) {
+            final ConsoleReporter reporter = ConsoleReporter.forRegistry(registry)
+                    .convertRatesTo(TimeUnit.SECONDS)
+                    .convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .build();
+            reporter.start(1, TimeUnit.MINUTES);
+            LOG.info("Metrics console reporter bootstrapped");
+        }
 
-        //set librato reporter
-        final LibratoConfig libratoConfig = configuration.getLibrato();
-        if (libratoConfig.isActivate())
-            LibratoReporter.enable(
-                    LibratoReporter.builder(
-                            registry,
-                            libratoConfig.getEmail(),
-                            libratoConfig.getApiToken(),
-                            libratoConfig.getHostName()),
-                    libratoConfig.getInterval(),
-                    TimeUnit.SECONDS);
+        //set graphite reporter
+        final GraphiteConfig graphiteConfig = configuration.getGraphite();
+        if (graphiteConfig.isActivate()) {
+            final Graphite graphite = new Graphite(new InetSocketAddress(graphiteConfig.getHost(), graphiteConfig.getPort()));
+            final GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(registry)
+                    .prefixedWith(graphiteConfig.getApiKey())
+                    .convertRatesTo(TimeUnit.SECONDS)
+                    .convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .filter(MetricFilter.ALL)
+                    .build(graphite);
+            graphiteReporter.start(1, TimeUnit.MINUTES);
+            LOG.info("Metrics graphite reporter bootstrapped");
+        }
     }
 
     /**

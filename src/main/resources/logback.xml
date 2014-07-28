@@ -17,7 +17,7 @@
 
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework" level="ERROR"/>
     <logger name="org.apache.catalina" level="ERROR"/>
     <logger name="com.ninjas.movietime" level="DEBUG"/>
 </configuration>

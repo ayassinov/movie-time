@@ -13,21 +13,17 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-public class LibratoConfig {
+public class GraphiteConfig {
 
-    @NotEmpty(message = "Email is mandatory")
-    private String email;
+    @NotEmpty(message = "ApiKey is mandatory")
+    private String apiKey;
 
-    @NotEmpty(message = "ApiToken is mandatory")
-    private String apiToken;
+    @NotEmpty(message = "Host is mandatory")
+    private String host;
 
-    @NotEmpty(message = "HostName is mandatory")
-    private String hostName;
+    @NotEmpty(message = "Port is mandatory")
+    private int port;
 
     @NotNull(message = "Activate should have a value of true or false")
     private boolean activate;
-
-    @NotNull(message = "Interval cannot be null")
-    private int interval = 20;
-
 }

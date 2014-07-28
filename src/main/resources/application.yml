@@ -3,12 +3,11 @@ app:
   version: ${pom.version}
   mongoUrl: mongodb://localhost/hellocinedb
   bugSnag: 16f3943bcff62960d25dcf14053efb98
-  librato:
+  graphite:
     activate: false
-    email: app27658792@heroku.com
-    token: db71ccf19c35b7d7b58d310ace20188d7d7500a54c993dee09574729bdea5176
-    host: localhost
-    interval: 30
+    apiKey: c68abc3f-0356-4f5e-a0c3-062db5ae697b
+    host: carbon.hostedgraphite.com
+    port: 2003
   client:
     readTimeOut: 5000
     connectTimeout: 2000

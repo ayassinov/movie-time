@@ -51,7 +51,7 @@ public class ApplicationConfig {
     @NotNull(message = "http client configuration is mandatory")
     private HttpClientConfig client;
 
-    private LibratoConfig librato;
+    private GraphiteConfig graphite;
 
     private String bugSnag = null;
 
