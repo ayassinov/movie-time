@@ -40,5 +40,8 @@ public class HttpClientConfig {
     @NotEmpty(message = "User agent cannot be null or empty")
     private String userAgent;
 
+    @NotNull(message = "Activate metrics should be equals to true or false")
+    private boolean activateMetrics = true;
+
     private ProxyConfig proxy;
 }

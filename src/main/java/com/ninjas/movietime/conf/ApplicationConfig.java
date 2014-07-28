@@ -51,6 +51,8 @@ public class ApplicationConfig {
     @NotNull(message = "http client configuration is mandatory")
     private HttpClientConfig client;
 
+    private LibratoConfig librato;
+
     private String bugSnag = null;
 
     private String esUrl = null;

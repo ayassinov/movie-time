@@ -17,19 +17,22 @@
 package com.ninjas.movietime;
 
 import com.bugsnag.Client;
+import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.librato.metrics.LibratoReporter;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.ninjas.movietime.conf.ApplicationConfig;
 import com.ninjas.movietime.conf.HttpClientFactory;
+import com.ninjas.movietime.conf.LibratoConfig;
 import com.ninjas.movietime.conf.RunModeEnum;
 import com.ninjas.movietime.core.jackson.FuzzyEnumModule;
 import com.ninjas.movietime.core.jackson.GuavaExtrasModule;
 import com.ninjas.movietime.core.jackson.MovieTimeJsonMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author ayassinov on 11/07/14
  */
@@ -60,20 +65,38 @@ public class MovieTimeApplication implements CommandLineRunner {
     @Autowired
     private ApplicationConfig configuration;
 
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
+    private MetricRegistry registry;
+
     public static void main(String[] args) throws Exception {
         SpringApplication.run(MovieTimeApplication.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
+        configureMetrics();
     }
 
-    @Bean
-    @Scope(value = "singleton")
-    public MetricRegistry getMetrics() {
-        final MetricRegistry metrics = new MetricRegistry();
+    private void configureMetrics() {
+        //set librato console reporter
+        final ConsoleReporter reporter = ConsoleReporter.forRegistry(registry)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(1, TimeUnit.MINUTES);
 
-        return metrics;
+        //set librato reporter
+        final LibratoConfig libratoConfig = configuration.getLibrato();
+        if (libratoConfig.isActivate())
+            LibratoReporter.enable(
+                    LibratoReporter.builder(
+                            registry,
+                            libratoConfig.getEmail(),
+                            libratoConfig.getApiToken(),
+                            libratoConfig.getHostName()),
+                    libratoConfig.getInterval(),
+                    TimeUnit.SECONDS);
     }
 
     /**
@@ -155,7 +178,7 @@ public class MovieTimeApplication implements CommandLineRunner {
     public RestTemplate restTemplate() {
         //get HttpFactory
         final HttpComponentsClientHttpRequestFactory factory =
-                HttpClientFactory.INSTANCE.getRequestFactory(configuration.getClient());
+                HttpClientFactory.INSTANCE.getRequestFactory(registry, configuration.getClient());
 
         return new RestTemplate(factory);
     }
