@@ -40,11 +40,12 @@ public class MainResource {
         return "YO ! MAN!";
     }
 
-    @RequestMapping(method = RequestMethod.HEAD)
+
     /**
      * for new relic ping
      */
-    public String ok() {
-        return "ok";
+    @RequestMapping(method = RequestMethod.HEAD)
+    public String ping() {
+        return "pong";
     }
 }

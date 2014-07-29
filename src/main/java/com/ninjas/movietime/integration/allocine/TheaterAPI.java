@@ -16,16 +16,14 @@
 
 package com.ninjas.movietime.integration.allocine;
 
-import com.ninjas.movietime.core.domain.Location;
+import com.google.common.base.Preconditions;
+import com.ninjas.movietime.core.domain.GeoLocation;
 import com.ninjas.movietime.core.util.StringUtils;
-import com.ninjas.movietime.integration.allocine.core.AlloCineRequest;
 import com.ninjas.movietime.integration.allocine.core.Builder;
 import com.ninjas.movietime.integration.allocine.core.Parameter;
 import com.ninjas.movietime.integration.allocine.core.SearchFilterEnum;
-import com.google.common.base.Preconditions;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -34,35 +32,31 @@ import java.util.List;
 @Service
 public class TheaterAPI extends BaseAlloCineAPI {
 
+    public TheaterAPI() {
+        super("theaterlist");
+    }
+
     public String findById(String theaterId, int count) {
-        final List<Parameter> parameters = Builder.create()
-                .add("theater", theaterId)
-                .add("count", String.valueOf(count))
-                .build();
-        final URI url = AlloCineRequest.create("theaterlist", parameters);
-        return getForObject(url, String.class);
+        final List<Parameter> parameters = buildParameters(count, "theater", theaterId);
+        return get(parameters, String.class);
     }
 
     public String findByLocation(String location, int radius, int count) {
-        final List<Parameter> parameters = Builder.create()
-                .add("location", location)
-                .build();
-        return find(parameters, radius, count);
+        final List<Parameter> parameters = buildParameters(radius, count, "location", location);
+        return get(parameters, String.class);
     }
 
-    public String findByGeoLoc(Location location, int radius, int count) {
-        final List<Parameter> parameters = Builder.create()
-                .add("lat", location.getLatitude())
-                .add("long", location.getLongitude())
-                .build();
-        return find(parameters, radius, count);
+    public String findByGeoLocation(GeoLocation geoLocation, int radius, int count) {
+        final List<Parameter> parameters = buildParameters(radius, count,
+                "lat", geoLocation.getLatitude(),
+                "long", geoLocation.getLongitude());
+
+        return get(parameters, String.class);
     }
 
-    public String findByZip(String zip, int radius, int count) {
-        final List<Parameter> parameters = Builder.create()
-                .add("zip", zip)
-                .build();
-        return find(parameters, radius, count);
+    public String findByZip(int zip, int radius, int count) {
+        final List<Parameter> parameters = buildParameters(radius, count, "zip", String.valueOf(zip));
+        return get(parameters, String.class);
     }
 
     public String findByName(String term, int count) {
@@ -70,13 +64,25 @@ public class TheaterAPI extends BaseAlloCineAPI {
         return search(StringUtils.encode(term), SearchFilterEnum.THEATER, count, String.class);
     }
 
-    private String find(final List<Parameter> parameters, int radius, int count) {
+    private List<Parameter> buildParameters(int count, String... params) {
+        return buildParameters(-1, count, params);
+    }
 
-        parameters.add(new Parameter("radius", String.valueOf(radius)));
-        parameters.add(new Parameter("count", String.valueOf(count)));
+    private List<Parameter> buildParameters(int radius, int count, String... params) {
+        //check if there is a pair of params
+        Preconditions.checkArgument(params.length % 2 == 0, "Params should be in pairs");
 
-        final URI url = AlloCineRequest.create("theaterlist", parameters);
+        final Builder parameterBuilder = Builder.create();
+        for (int i = 0; i < params.length; i = i + 2) {
+            parameterBuilder.add(params[i], params[i + 1]);
+        }
 
-        return getForObject(url, String.class);
+        //default parameters for all calls :)
+        parameterBuilder.add("count", String.valueOf(count));
+        if (radius >= 0) {
+            parameterBuilder.add("radius", String.valueOf(radius));
+        }
+
+        return parameterBuilder.build();
     }
 }

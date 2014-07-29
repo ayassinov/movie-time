@@ -31,9 +31,9 @@ public class TheaterTest extends BaseTest {
 
     @Test
     public void testEquals() {
-        final Theater theaterA = new Theater("1", "A", new Location("titiA", "sisiA"));
-        final Theater theaterB = new Theater("1", "B", new Location("titiB", "sisiB"));
-        final Theater theaterC = new Theater("2", "A", new Location("titiA", "sisiA"));
+        final Theater theaterA = new Theater("1", "A", new GeoLocation("titiA", "sisiA"));
+        final Theater theaterB = new Theater("1", "B", new GeoLocation("titiB", "sisiB"));
+        final Theater theaterC = new Theater("2", "A", new GeoLocation("titiA", "sisiA"));
         assertThat(theaterA, equalTo(theaterB));
         assertThat(theaterA, not(equalTo(theaterC)));
     }

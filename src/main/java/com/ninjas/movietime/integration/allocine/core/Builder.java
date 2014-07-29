@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-* @author ayassinov on 15/07/14
-*/
+ * @author ayassinov on 15/07/14
+ */
 public class Builder {
 
     private List<Parameter> parameters = new ArrayList<>();
@@ -47,6 +47,13 @@ public class Builder {
 
     public Builder add(Parameter parameter) {
         parameters.add(parameter);
+        return this;
+    }
+
+    public Builder addAll(final List<Parameter> inParameters) {
+        for (final Parameter inParameter : inParameters) {
+            parameters.add(inParameter);
+        }
         return this;
     }
 

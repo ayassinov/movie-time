@@ -68,10 +68,6 @@ public class MovieTimeApplication implements CommandLineRunner {
     @Autowired
     private ApplicationConfig configuration;
 
-    @Autowired
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    private MetricRegistry registry;
-
     public static void main(String[] args) throws Exception {
         SpringApplication.run(MovieTimeApplication.class, args);
     }
@@ -82,6 +78,7 @@ public class MovieTimeApplication implements CommandLineRunner {
     }
 
     private void configureMetrics() {
+        final MetricRegistry registry = getRegistry();
         //set console reporter only on dev mode
         if (configuration.getMode().equals(RunModeEnum.DEV)) {
             final ConsoleReporter reporter = ConsoleReporter.forRegistry(registry)
@@ -105,6 +102,13 @@ public class MovieTimeApplication implements CommandLineRunner {
             graphiteReporter.start(1, TimeUnit.MINUTES);
             LOG.info("Metrics graphite reporter bootstrapped");
         }
+    }
+
+
+    @Bean
+    @Scope(value = "singleton")
+    public MetricRegistry getRegistry() {
+        return new MetricRegistry();
     }
 
     /**
@@ -186,7 +190,7 @@ public class MovieTimeApplication implements CommandLineRunner {
     public RestTemplate restTemplate() {
         //get HttpFactory
         final HttpComponentsClientHttpRequestFactory factory =
-                HttpClientFactory.INSTANCE.getRequestFactory(registry, configuration.getClient());
+                HttpClientFactory.INSTANCE.getRequestFactory(getRegistry(), configuration.getClient());
 
         return new RestTemplate(factory);
     }

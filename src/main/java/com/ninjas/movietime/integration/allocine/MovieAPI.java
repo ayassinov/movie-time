@@ -16,15 +16,13 @@
 
 package com.ninjas.movietime.integration.allocine;
 
-import com.ninjas.movietime.integration.allocine.core.AlloCineRequest;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.ninjas.movietime.integration.allocine.core.Builder;
 import com.ninjas.movietime.integration.allocine.core.Parameter;
 import com.ninjas.movietime.integration.allocine.core.SearchFilterEnum;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -34,6 +32,10 @@ import java.util.List;
 public class MovieAPI extends BaseAlloCineAPI {
 
 
+    public MovieAPI() {
+        super("movie");
+    }
+
     /**
      * Get a movie information using the allo cine code.
      *
@@ -42,16 +44,13 @@ public class MovieAPI extends BaseAlloCineAPI {
      * throws IllegalArgumentException if movieId is null or empty
      */
     public String findById(String movieId) {
-
         Preconditions.checkArgument(!Strings.isNullOrEmpty(movieId));
 
         final List<Parameter> parameters = Builder
                 .create("code", movieId)
                 .build();
 
-        final URI url = AlloCineRequest.create("movie", parameters);
-
-        return getForObject(url, String.class);
+        return get(parameters, String.class);
     }
 
     public String findByName(String name, int count) {

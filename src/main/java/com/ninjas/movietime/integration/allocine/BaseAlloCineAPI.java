@@ -16,50 +16,75 @@
 
 package com.ninjas.movietime.integration.allocine;
 
+import com.bugsnag.Client;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.ninjas.movietime.integration.allocine.core.AlloCineRequest;
 import com.ninjas.movietime.integration.allocine.core.Builder;
 import com.ninjas.movietime.integration.allocine.core.Parameter;
 import com.ninjas.movietime.integration.allocine.core.SearchFilterEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ayassinov on 11/07/14
  */
 public abstract class BaseAlloCineAPI {
 
-    private static final String USER_AGENT_VALUE = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5";
+    protected static final Logger LOG = LoggerFactory.getLogger(BaseAlloCineAPI.class);
 
     @Autowired
     private RestTemplate restTemplate;
 
-    protected <T> T getForObject(URI uri, Class<T> clazz) {
-        return restTemplate.getForObject(uri, clazz);
+    @Autowired
+    private MetricRegistry registry;
+
+    @Autowired
+    private Client bugSnag;
+
+    private final String path;
+
+    protected BaseAlloCineAPI(String path) {
+        //set path
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "Path cannot be null");
+        this.path = path;
     }
 
-    private <T> T getForObjectWithHeaders(URI uri, Map<String, String> headers, Class<T> clazz) {
-        final HttpHeaders httpHeaders = getJsonDefaultHeader();
-        httpHeaders.setAll(headers);
-        final ResponseEntity<T> exchange = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity(httpHeaders), clazz);
-        return exchange.getBody();
-    }
-
-    private HttpHeaders getJsonDefaultHeader() {
-        //accept
-        final List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-        acceptableMediaTypes.add(MediaType.APPLICATION_JSON);
-
-        //create headers
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(acceptableMediaTypes);
-        httpHeaders.add("User-Agent", USER_AGENT_VALUE);
-        return httpHeaders;
+    /**
+     * Execute an HTTP GET request using Allo Cine configuration providing a path variable and a result type
+     *
+     * @param parameters list of URL parameters
+     * @param clazz      The result class type
+     * @param <T>        The type of the result
+     * @return return an object in the same type as provided, resulting from the execution of HTTP GET request
+     */
+    protected <T> T get(List<Parameter> parameters, Class<T> clazz) {
+        //construct the url
+        final URI url = AlloCineRequest.create(path, parameters);
+        //metrics
+        final Timer.Context timerContext = timer("get").time();
+        try {
+            return restTemplate.<T>getForObject(url, clazz);
+        } catch (RestClientException restEx) {
+            //notify bugSnag
+            bugSnag.notify(restEx);
+            //log error
+            LOG.error("HTTP GET request ended with error", restEx);
+            //rethrow
+            throw restEx;
+        } finally {
+            //get duration
+            final long duration = timerContext.stop();
+            LOG.trace("GET HTTP request executed in {} ms", duration);
+        }
     }
 
     protected <T> T search(String term, SearchFilterEnum searchFilterEnum, int count, Class<T> clazz) {
@@ -71,7 +96,12 @@ public abstract class BaseAlloCineAPI {
 
         final URI url = AlloCineRequest.create("search", parameters);
 
-        return getForObject(url, clazz);
+        //todo migrate to search Repo
+        return restTemplate.getForObject(url, clazz);
+    }
+
+    private Timer timer(String methodName) {
+        return registry.timer(this.getClass().getCanonicalName() + methodName + "(" + path + ")");
     }
 }
 

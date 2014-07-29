@@ -34,18 +34,18 @@ public class Theater {
 
     private String name;
 
-    private Location location;
+    private GeoLocation location;
 
     public Theater() {
     }
 
-    public Theater(String id, String name, Location location) {
+    public Theater(String id, String name, GeoLocation location) {
         this.id = id;
         this.name = name;
         this.location = location;
     }
 
-    public Theater(String name, Location location) {
+    public Theater(String name, GeoLocation location) {
         this.name = name;
         this.location = location;
     }

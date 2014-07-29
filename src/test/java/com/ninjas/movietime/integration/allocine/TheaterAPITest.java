@@ -16,8 +16,8 @@
 
 package com.ninjas.movietime.integration.allocine;
 
+import com.ninjas.movietime.core.domain.GeoLocation;
 import com.ninjas.movietime.integration.BaseAlloCineTest;
-import com.ninjas.movietime.core.domain.Location;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,15 +36,15 @@ public class TheaterAPITest extends BaseAlloCineTest {
 
     @Test
     public void testListTheaterZip() {
-        final String puteauxZip = "92800";
+        final int puteauxZip = 92800;
         final String response = theaterAPI.findByZip(puteauxZip, radius, resultCount);
         checkAlloCineAPIResponseError(response, expectedTheaterName);
     }
 
     @Test
-    public void testListTheaterLocation() {
-        final Location puteauxLocation = new Location("48.88288288288288", "2.246771145958308");
-        final String response = theaterAPI.findByGeoLoc(puteauxLocation, radius, resultCount);
+    public void testListTheaterByGeoLocation() {
+        final GeoLocation puteauxLocation = new GeoLocation("48.88288288288288", "2.246771145958308");
+        final String response = theaterAPI.findByGeoLocation(puteauxLocation, radius, resultCount);
         checkAlloCineAPIResponseError(response, expectedTheaterName);
     }
 

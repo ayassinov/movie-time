@@ -1,3 +1,7 @@
 app:
   mode: TEST
   mongoUrl: mongodb://localhost/test
+  graphite:
+      activate: false
+  client:
+    activateMetrics: false

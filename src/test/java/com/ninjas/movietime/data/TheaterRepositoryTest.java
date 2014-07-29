@@ -17,7 +17,7 @@
 package com.ninjas.movietime.data;
 
 import com.ninjas.movietime.BaseTest;
-import com.ninjas.movietime.core.domain.Location;
+import com.ninjas.movietime.core.domain.GeoLocation;
 import com.ninjas.movietime.core.domain.Theater;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,15 +58,15 @@ public class TheaterRepositoryTest extends BaseTest {
 
     @Test
     public void testInsert() {
-        Theater save = theaterRepository.save(new Theater("La defense", new Location("A", "B")));
+        Theater save = theaterRepository.save(new Theater("La defense", new GeoLocation("A", "B")));
         assertThat(save.getId(), notNullValue());
         assertThat(theaterRepository.findOne(save.getId()), is(save));
     }
 
     @Test
     public void testFindByNameLikeIgnoreCaseOrderByNameAsc() {
-        Theater saveA = theaterRepository.save(new Theater("A Defense", new Location("A", "B")));
-        Theater saveZ = theaterRepository.save(new Theater("Z defense", new Location("D", "E")));
+        Theater saveA = theaterRepository.save(new Theater("A Defense", new GeoLocation("A", "B")));
+        Theater saveZ = theaterRepository.save(new Theater("Z defense", new GeoLocation("D", "E")));
         assertThat(saveA.getId(), notNullValue());
         assertThat(saveZ.getId(), notNullValue());
         assertThat(theaterRepository.findAll().size(), is(2));
@@ -79,8 +79,8 @@ public class TheaterRepositoryTest extends BaseTest {
 
     @Test
     public void testFindByLocationLongitude() {
-        Theater saveA = theaterRepository.save(new Theater("A Defense", new Location("A", "B")));
-        Theater saveZ = theaterRepository.save(new Theater("Z defense", new Location("D", "E")));
+        Theater saveA = theaterRepository.save(new Theater("A Defense", new GeoLocation("A", "B")));
+        Theater saveZ = theaterRepository.save(new Theater("Z defense", new GeoLocation("D", "E")));
 
         assertThat(saveA.getId(), notNullValue());
         assertThat(saveZ.getId(), notNullValue());
