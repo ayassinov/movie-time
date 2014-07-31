@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,6 @@ public interface TheaterRepository extends MongoRepository<Theater, String> {
     List<Theater> findByNameLikeIgnoreCaseOrderByNameAsc(String name);
 
 
-    List<Theater> findByLocationLongitude(String longitude);
+    List<Theater> findByGeoLocationLongitude(String longitude);
 
 }

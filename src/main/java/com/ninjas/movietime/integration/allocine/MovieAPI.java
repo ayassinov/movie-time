@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package com.ninjas.movietime.integration.allocine;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.ninjas.movietime.integration.allocine.core.Builder;
-import com.ninjas.movietime.integration.allocine.core.Parameter;
-import com.ninjas.movietime.integration.allocine.core.SearchFilterEnum;
+import com.ninjas.movietime.core.domain.Movie;
+import com.ninjas.movietime.integration.allocine.request.Builder;
+import com.ninjas.movietime.integration.allocine.request.SearchFilterEnum;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author ayassinov on 17/07/14
@@ -43,14 +42,11 @@ public class MovieAPI extends BaseAlloCineAPI {
      * @return movie details in the json text format
      * throws IllegalArgumentException if movieId is null or empty
      */
-    public String findById(String movieId) {
+    public Optional<Movie> findById(String movieId) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(movieId));
-
-        final List<Parameter> parameters = Builder
-                .create("code", movieId)
-                .build();
-
-        return get(parameters, String.class);
+        final Builder parameterBuilder = Builder.create("code", movieId);
+        final Movie movie = get(parameterBuilder.build()).getMovie();
+        return Optional.fromNullable(movie);
     }
 
     public String findByName(String name, int count) {

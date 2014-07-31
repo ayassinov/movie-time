@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ public class TheaterTest extends BaseTest {
 
     @Test
     public void testEquals() {
-        final Theater theaterA = new Theater("1", "A", new GeoLocation("titiA", "sisiA"));
-        final Theater theaterB = new Theater("1", "B", new GeoLocation("titiB", "sisiB"));
-        final Theater theaterC = new Theater("2", "A", new GeoLocation("titiA", "sisiA"));
+        final Theater theaterA = new Theater("1", "A", new GeoLocation("titiA", "sisiA"), null, null, null);
+        final Theater theaterB = new Theater("1", "B", new GeoLocation("titiB", "sisiB"), null, null, null);
+        final Theater theaterC = new Theater("2", "A", new GeoLocation("titiA", "sisiA"), null, null, null);
         assertThat(theaterA, equalTo(theaterB));
         assertThat(theaterA, not(equalTo(theaterC)));
     }

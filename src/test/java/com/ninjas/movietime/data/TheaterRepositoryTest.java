@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
 package com.ninjas.movietime.data;
 
 import com.ninjas.movietime.BaseTest;
-import com.ninjas.movietime.core.domain.GeoLocation;
-import com.ninjas.movietime.core.domain.Theater;
+import com.ninjas.movietime.core.domain.*;
+import com.ninjas.movietime.core.domain.Shutdown;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.OutputCapture;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,13 +41,22 @@ public class TheaterRepositoryTest extends BaseTest {
     @Autowired
     private TheaterRepository theaterRepository;
 
-    @Rule
-    public OutputCapture outputCapture = new OutputCapture();
-
+    private Theater theaterToSave;
 
     @Before
-    public void init() {
+    public void initialize() {
+        this.theaterRepository.deleteAll();
+        this.theaterToSave = new Theater("UGC Ciné Cité La Défense",
+                new GeoLocation("48.88288288288288", "2.246771145958308"),
+                new Address("5, av. Mac-Mahon", "Paris - La Défense", "92800"),
+                new TheaterChain("UGC", "81007"),
+                new Shutdown(new Date(), new Date(), "FERMETURE ESTIVALE"));
+    }
+
+    @After
+    public void tearDown() {
         theaterRepository.deleteAll();
+        assertThat(theaterRepository.findAll().size(), is(0));
     }
 
 
@@ -58,39 +68,41 @@ public class TheaterRepositoryTest extends BaseTest {
 
     @Test
     public void testInsert() {
-        Theater save = theaterRepository.save(new Theater("La defense", new GeoLocation("A", "B")));
+        Theater save = theaterRepository.save(this.theaterToSave);
         assertThat(save.getId(), notNullValue());
         assertThat(theaterRepository.findOne(save.getId()), is(save));
     }
 
     @Test
     public void testFindByNameLikeIgnoreCaseOrderByNameAsc() {
-        Theater saveA = theaterRepository.save(new Theater("A Defense", new GeoLocation("A", "B")));
-        Theater saveZ = theaterRepository.save(new Theater("Z defense", new GeoLocation("D", "E")));
-        assertThat(saveA.getId(), notNullValue());
-        assertThat(saveZ.getId(), notNullValue());
-        assertThat(theaterRepository.findAll().size(), is(2));
+        final Theater saveA = new Theater();
+        BeanUtils.copyProperties(theaterToSave, saveA);
+        saveA.setName("A Defense");
+        final Theater saveB = new Theater();
+        BeanUtils.copyProperties(saveA, saveB);
+        saveB.setName("B Defense");
 
-        List<Theater> list = theaterRepository.findByNameLikeIgnoreCaseOrderByNameAsc("defense");
-        assertThat(list.size(), is(2));
-        assertThat(list.get(0), is(saveA));
-        assertThat(list.get(1), is(saveZ));
+        this.theaterRepository.save(saveA);
+        this.theaterRepository.save(saveB);
+
+        assertThat(saveA.getId(), notNullValue());
+        assertThat(saveB.getId(), notNullValue());
+        assertThat(this.theaterRepository.findAll().size(), is(2));
+
+        List<Theater> list = this.theaterRepository.findByNameLikeIgnoreCaseOrderByNameAsc("DEFENSE");
+        assertThat("Like and Ignore case", list.size(), is(2));
+        assertThat("Order by ascending", list.get(0), is(saveA));
+        assertThat("Order by ascending", list.get(1), is(saveB));
     }
 
     @Test
     public void testFindByLocationLongitude() {
-        Theater saveA = theaterRepository.save(new Theater("A Defense", new GeoLocation("A", "B")));
-        Theater saveZ = theaterRepository.save(new Theater("Z defense", new GeoLocation("D", "E")));
+        this.theaterRepository.save(this.theaterToSave);
+        assertThat(this.theaterToSave.getId(), notNullValue());
 
-        assertThat(saveA.getId(), notNullValue());
-        assertThat(saveZ.getId(), notNullValue());
-        
-        assertThat(theaterRepository.findAll().size(), is(2));
-
-        List<Theater> list = theaterRepository.findByLocationLongitude("A");
-        // TODO : to fix return 0 and should be 1
-        //assertThat(list.size(), is(1));
-        //assertThat(list.get(0), is(saveA));
+        List<Theater> list = this.theaterRepository.findByGeoLocationLongitude("2.246771145958308");
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0), is(this.theaterToSave));
     }
 
 }

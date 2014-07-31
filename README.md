@@ -6,7 +6,7 @@ license:
 =========
 The MIT License (MIT)
 
-Copyright (c) 2014 GlagSoftware
+Copyright (c) 2014 Parisian Ninjas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

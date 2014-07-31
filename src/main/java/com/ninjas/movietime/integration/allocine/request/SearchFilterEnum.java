@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.integration.allocine.core;
+package com.ninjas.movietime.integration.allocine.request;
 
 /**
- * Represent an URL parameters with two properties name, value
- * Use the static one to return a list with only one parameters
- * The toString is surcharged to build an URL core like name=value.
+ * @author ayassinov on 15/07/14
  */
-public class Parameter {
-
-    private final String name;
-    private final String value;
-
-    public Parameter(String name, String value) {
-        this.name = name;
-        this.value = value;
-    }
+public enum SearchFilterEnum {
+    MOVIE, THEATER;
 
     @Override
     public String toString() {
-        return String.format("%s=%s", name, value);
+        return this.name().toLowerCase();
     }
+
+
 }

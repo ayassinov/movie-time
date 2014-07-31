@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package com.ninjas.movietime.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -26,17 +28,20 @@ import java.io.Serializable;
  * @author ayassinov on 11/07/14
  */
 @Getter
+@ToString
+@EqualsAndHashCode(of = "email")
 public class User implements Serializable {
 
-    @JsonProperty
     private final String firstName;
-    @JsonProperty
+
     private final String lastName;
-    @JsonProperty
+
     private final String email;
 
     @JsonCreator
-    public User(String firstName, String lastName, String email) {
+    public User(@JsonProperty("firstName") String firstName,
+                @JsonProperty("lastName") String lastName,
+                @JsonProperty("email") String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

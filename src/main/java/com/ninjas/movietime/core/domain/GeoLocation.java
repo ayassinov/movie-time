@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,27 @@
 
 package com.ninjas.movietime.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * @author ayassinov on 16/07/14
  */
 @Getter
+@ToString
 @EqualsAndHashCode(of = {"longitude", "latitude"})
 public class GeoLocation {
 
     private final String latitude;
+
     private final String longitude;
 
-    public GeoLocation(String latitude, String longitude) {
+    @JsonCreator
+    public GeoLocation(@JsonProperty("lat") String latitude,
+                       @JsonProperty("long") String longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

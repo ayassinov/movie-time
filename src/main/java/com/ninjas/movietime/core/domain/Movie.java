@@ -16,36 +16,27 @@
 
 package com.ninjas.movietime.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * @author ayassinov on 25/07/14
+ * @author ayassinov on 30/07/2014.
  */
 @Getter
+@Setter
 @ToString
-@TypeAlias("theaterChains")
-@Document(collection = "theaterChain")
-@EqualsAndHashCode(of = "code")
-public class TheaterChain {
+@EqualsAndHashCode(of = "id")
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Movie {
 
     @Id
-    private final String code;
+    private String id;
 
-    @Indexed
-    private final String name;
+    private String code;
 
-    @JsonCreator
-    public TheaterChain(@JsonProperty("code") String code,
-                        @JsonProperty("$") String name) {
-        this.code = code;
-        this.name = name;
-    }
+    private int productionYear;
 }

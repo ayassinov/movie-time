@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.mongodb.MongoClient;
@@ -153,6 +152,9 @@ public class MovieTimeApplication implements CommandLineRunner {
         objectMapper.registerModule(new FuzzyEnumModule());
         objectMapper.registerModule(new GuavaExtrasModule());
         objectMapper.registerModule(new GuavaModule());
+
+        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         return objectMapper;
     }

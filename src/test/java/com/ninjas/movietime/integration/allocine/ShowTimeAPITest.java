@@ -17,33 +17,33 @@
 package com.ninjas.movietime.integration.allocine;
 
 import com.google.common.base.Optional;
-import com.ninjas.movietime.core.domain.Movie;
+import com.google.common.collect.ImmutableList;
+import com.ninjas.movietime.core.domain.Showtime;
 import com.ninjas.movietime.integration.BaseAlloCineTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 
 /**
- * @author ayassinov on 17/07/14
+ * @author ayassinov on 30/07/2014.
  */
-public class MovieAPITest extends BaseAlloCineTest {
+public class ShowTimeAPITest extends BaseAlloCineTest {
 
     @Autowired
-    private MovieAPI movieAPI;
+    private ShowtimeAPI auShowtimeAPI;
 
     @Test
-    public void testGetMovie() throws Exception {
-        final Optional<Movie> response = movieAPI.findById("143067");
-        Assert.assertThat(response.isPresent(), is(true));
-        Assert.assertThat(response.get().getCode(), equalTo("143067"));
-    }
+    public void testFindByTheaters() {
+        ImmutableList<String> theaterIds = ImmutableList.of("B2619", "B0203", "B0074").asList();
+        List<Showtime> showTimes = auShowtimeAPI.findByTheaters(theaterIds,
+                Optional.<String>absent(),
+                Optional.<Date>absent());
 
-    @Test
-    public void testSearch() {
-        final String response = movieAPI.findByName("atlas", 10);
-        checkAlloCineAPIResponseError(response, "\"originalTitle\":\"Cloud Atlas\"");
+        Assert.assertThat(showTimes.size(), equalTo(3));
     }
 }

@@ -21,31 +21,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 /**
- * @author ayassinov on 25/07/14
+ * @author ayassinov
  */
 @Getter
 @ToString
-@TypeAlias("theaterChains")
-@Document(collection = "theaterChain")
-@EqualsAndHashCode(of = "code")
-public class TheaterChain {
+@EqualsAndHashCode(of = {"dateStart", "dateEnd", "reason"})
+public class Shutdown {
 
-    @Id
-    private final String code;
+    private final Date dateStart;
 
-    @Indexed
-    private final String name;
+    private final Date dateEnd;
+
+    private final String reason;
 
     @JsonCreator
-    public TheaterChain(@JsonProperty("code") String code,
-                        @JsonProperty("$") String name) {
-        this.code = code;
-        this.name = name;
+    public Shutdown(@JsonProperty("dateStart") Date dateStart,
+                    @JsonProperty("dateEnd") Date dateEnd,
+                    @JsonProperty("$") String reason) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.reason = reason;
     }
 }

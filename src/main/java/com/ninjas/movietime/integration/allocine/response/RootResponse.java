@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.conf;
+package com.ninjas.movietime.integration.allocine.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ninjas.movietime.core.domain.Movie;
+import com.ninjas.movietime.core.domain.Theater;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.NotNull;
 
 /**
- * @author ayassinov on 28/07/2014.
+ * @author ayassinov on 31/07/2014.
  */
 @Getter
 @Setter
-@ToString
-public class GraphiteConfig {
+public class RootResponse {
 
-    @NotEmpty(message = "ApiKey is mandatory")
-    private String apiKey;
+    @JsonProperty(value = "feed")
+    private FeedResponse feedResponse;
 
-    @NotEmpty(message = "Host is mandatory")
-    private String host;
+    private Movie movie;
 
-    @NotEmpty(message = "Port is mandatory")
-    private int port;
-
-    @NotNull(message = "Activate should have a value of true or false")
-    private boolean activate;
+    private Theater theater;
 }

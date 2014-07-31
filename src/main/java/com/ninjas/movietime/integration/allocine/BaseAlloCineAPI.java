@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 GlagSoftware
+ * Copyright 2014 Parisian Ninjas
  *
  * Licensed under the MIT License;
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ package com.ninjas.movietime.integration.allocine;
 import com.bugsnag.Client;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.ninjas.movietime.integration.allocine.core.AlloCineRequest;
-import com.ninjas.movietime.integration.allocine.core.Builder;
-import com.ninjas.movietime.integration.allocine.core.Parameter;
-import com.ninjas.movietime.integration.allocine.core.SearchFilterEnum;
+import com.ninjas.movietime.integration.allocine.request.AlloCineRequest;
+import com.ninjas.movietime.integration.allocine.request.Builder;
+import com.ninjas.movietime.integration.allocine.request.Parameter;
+import com.ninjas.movietime.integration.allocine.request.SearchFilterEnum;
+import com.ninjas.movietime.integration.allocine.response.RootResponse;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,10 @@ public abstract class BaseAlloCineAPI {
     @Autowired
     private Client bugSnag;
 
+    @Autowired
+    @Getter
+    private ObjectMapper objectMapper;
+
     private final String path;
 
     protected BaseAlloCineAPI(String path) {
@@ -62,16 +69,36 @@ public abstract class BaseAlloCineAPI {
      * Execute an HTTP GET request using Allo Cine configuration providing a path variable and a result type
      *
      * @param parameters list of URL parameters
-     * @param clazz      The result class type
-     * @param <T>        The type of the result
-     * @return return an object in the same type as provided, resulting from the execution of HTTP GET request
+     * @return return RootResponse, resulting from the serialization of the response HTTP GET request
      */
-    protected <T> T get(List<Parameter> parameters, Class<T> clazz) {
+    protected RootResponse get(List<Parameter> parameters) {
+        //construct the url
+        return get(this.path, parameters);
+    }
+
+    protected RootResponse get(String path, List<Parameter> parameters) {
         //construct the url
         final URI url = AlloCineRequest.create(path, parameters);
+        return execute(MethodEnum.GET, url, RootResponse.class);
+    }
+
+    protected <T> T search(String term, SearchFilterEnum searchFilterEnum, int count, Class<T> clazz) {
+        final List<Parameter> parameters = Builder.create()
+                .add("q", term)
+                .add("filter", searchFilterEnum.toString())
+                .add("count", String.valueOf(count))
+                .build();
+
+        final URI url = AlloCineRequest.create("search", parameters);
+
+        return execute(MethodEnum.GET, url, clazz);
+    }
+
+    private <T> T execute(MethodEnum method, URI url, Class<T> clazz) {
         //metrics
         final Timer.Context timerContext = timer("get").time();
         try {
+            //if (method.equals(MethodEnum.GET)) We have only GETs
             return restTemplate.<T>getForObject(url, clazz);
         } catch (RestClientException restEx) {
             //notify bugSnag
@@ -87,21 +114,12 @@ public abstract class BaseAlloCineAPI {
         }
     }
 
-    protected <T> T search(String term, SearchFilterEnum searchFilterEnum, int count, Class<T> clazz) {
-        final List<Parameter> parameters = Builder.create()
-                .add("q", term)
-                .add("filter", searchFilterEnum.toString())
-                .add("count", String.valueOf(count))
-                .build();
-
-        final URI url = AlloCineRequest.create("search", parameters);
-
-        //todo migrate to search Repo
-        return restTemplate.getForObject(url, clazz);
-    }
-
     private Timer timer(String methodName) {
         return registry.timer(this.getClass().getCanonicalName() + methodName + "(" + path + ")");
+    }
+
+    private enum MethodEnum {
+        GET, POST
     }
 }
 
