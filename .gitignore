@@ -55,3 +55,8 @@ target/
 *.iml
 src/main/resources/git.properties
 src/main/resources/application-proxy.yml
+.classpath
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.m2e.core.prefs
