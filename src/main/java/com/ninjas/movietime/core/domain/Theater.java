@@ -41,10 +41,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Theater {
 
     @Id
-    @JsonIgnore
+    @JsonProperty("code")
     private String id;
 
-    @Indexed(unique = true)
+    //@Indexed(name = "idx_name")
     @JsonProperty(value = "name", required = true)
     private String name;
 

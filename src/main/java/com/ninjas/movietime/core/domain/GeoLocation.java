@@ -30,13 +30,13 @@ import lombok.ToString;
 @EqualsAndHashCode(of = {"longitude", "latitude"})
 public class GeoLocation {
 
-    private final String latitude;
+    private final double latitude;
 
-    private final String longitude;
+    private final double longitude;
 
     @JsonCreator
-    public GeoLocation(@JsonProperty("lat") String latitude,
-                       @JsonProperty("long") String longitude) {
+    public GeoLocation(@JsonProperty("lat") double latitude,
+                       @JsonProperty("long") double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

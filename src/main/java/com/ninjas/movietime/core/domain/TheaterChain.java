@@ -17,20 +17,26 @@
 package com.ninjas.movietime.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author ayassinov on 25/07/14
  */
 @Getter
 @ToString
+//@JsonIgnoreProperties({"theaters"})
 @TypeAlias("theaterChains")
 @Document(collection = "theaterChain")
 @EqualsAndHashCode(of = "code")
@@ -41,6 +47,9 @@ public class TheaterChain {
 
     @Indexed
     private final String name;
+
+    @Setter
+    private List<Theater> theaters = new ArrayList<>();
 
     @JsonCreator
     public TheaterChain(@JsonProperty("code") String code,

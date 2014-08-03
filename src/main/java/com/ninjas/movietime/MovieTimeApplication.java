@@ -27,10 +27,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.ninjas.movietime.conf.ApplicationConfig;
-import com.ninjas.movietime.conf.GraphiteConfig;
-import com.ninjas.movietime.conf.HttpClientFactory;
-import com.ninjas.movietime.conf.RunModeEnum;
+import com.ninjas.movietime.conf.*;
 import com.ninjas.movietime.core.jackson.FuzzyEnumModule;
 import com.ninjas.movietime.core.jackson.GuavaExtrasModule;
 import com.ninjas.movietime.core.jackson.MovieTimeJsonMapper;
@@ -47,6 +44,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.WriteResultChecking;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -167,7 +165,7 @@ public class MovieTimeApplication implements CommandLineRunner {
     @Scope(value = "singleton")
     public MongoDbFactory mongoDbFactory() throws Exception {
         //parse the uri
-        final MongoClientURI mongoClientURI = new MongoClientURI(configuration.getMongoUrl());
+        final MongoClientURI mongoClientURI = new MongoClientURI(configuration.getMongo().getUrl());
         //create mongodb client
         final MongoClient mongoClient = new MongoClient(mongoClientURI);
         //create spring mongodbFactory
@@ -180,7 +178,10 @@ public class MovieTimeApplication implements CommandLineRunner {
      */
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(mongoDbFactory());
+        final MongoConfig mongoConfig = this.configuration.getMongo();
+        final MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
+        mongoTemplate.setWriteResultChecking(mongoConfig.getWriteResultChecking());
+        return mongoTemplate;
     }
 
     /**

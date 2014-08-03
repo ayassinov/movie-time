@@ -48,7 +48,7 @@ public class TheaterAPITest extends BaseAlloCineTest {
 
         final Theater ugcDefense = theaters.get(1);
         Assert.assertThat(ugcDefense.getName(), equalTo("UGC Ciné Cité La Défense"));
-        Assert.assertThat(ugcDefense.getGeoLocation().getLatitude(), equalTo("48.89076"));
+        Assert.assertThat(ugcDefense.getGeoLocation().getLatitude(), equalTo(48.89076));
         Assert.assertThat(ugcDefense.getAdr().getCity(), equalTo("Paris - La Défense"));
         Assert.assertThat(ugcDefense.getTheaterChain().getName(), equalTo("UGC"));
         Assert.assertThat(ugcDefense.getShutdown(), nullValue());
@@ -56,7 +56,7 @@ public class TheaterAPITest extends BaseAlloCineTest {
 
     @Test
     public void testListTheaterByGeoLocation() {
-        final GeoLocation puteauxLocation = new GeoLocation("48.88288288288288", "2.246771145958308");
+        final GeoLocation puteauxLocation = new GeoLocation(48.88288288288288, 2.246771145958308);
         final List<Theater> theaters = theaterAPI.findByGeoLocation(puteauxLocation, radius, resultCount);
         Assert.assertThat(theaters.size(), equalTo(10));
 

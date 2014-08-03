@@ -1,7 +1,9 @@
 app:
   mode: DEV
   version: ${pom.version}
-  mongoUrl: mongodb://localhost/hellocinedb
+  mongo:
+    url: mongodb://localhost/hellocinedb
+    writeResultChecking: EXCEPTION   #NONE, LOG, EXCEPTION
   bugSnag: 16f3943bcff62960d25dcf14053efb98
   graphite:
     activate: false

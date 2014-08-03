@@ -30,9 +30,9 @@ public class GeoLocationTest extends BaseTest{
 
     @Test
     public void testEquals() {
-        final GeoLocation locA = new GeoLocation("tata", "sasa");
-        final GeoLocation locB = new GeoLocation("tata", "sasa");
-        final GeoLocation locC = new GeoLocation("titi", "sisi");
+        final GeoLocation locA = new GeoLocation(1.0, 2.0);
+        final GeoLocation locB = new GeoLocation(1.0, 2.0);
+        final GeoLocation locC = new GeoLocation(2.0, 3.0);
         assertThat(locA, equalTo(locB));
         assertThat(locA, not(equalTo(locC)));
     }

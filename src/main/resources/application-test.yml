@@ -1,6 +1,8 @@
 app:
   mode: TEST
-  mongoUrl: mongodb://localhost/test
+  mongo:
+    url: mongodb://localhost/test
+    writeResultChecking: EXCEPTION
   graphite:
       activate: false
   client:

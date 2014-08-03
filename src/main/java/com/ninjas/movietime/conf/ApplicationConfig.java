@@ -45,11 +45,11 @@ public class ApplicationConfig {
     @NotNull(message = "Version cannot be null or empty")
     private String version;
 
-    @NotNull(message = "Mongo url configuration should not be null or empty")
-    private String mongoUrl;
-
     @NotNull(message = "http client configuration is mandatory")
     private HttpClientConfig client;
+
+    @NotNull(message = "Mongo configuration is mandatory")
+    private MongoConfig mongo;
 
     private GraphiteConfig graphite;
 

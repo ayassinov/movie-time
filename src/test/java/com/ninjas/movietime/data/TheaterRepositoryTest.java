@@ -47,7 +47,7 @@ public class TheaterRepositoryTest extends BaseTest {
     public void initialize() {
         this.theaterRepository.deleteAll();
         this.theaterToSave = new Theater("UGC Ciné Cité La Défense",
-                new GeoLocation("48.88288288288288", "2.246771145958308"),
+                new GeoLocation(48.88288288288288, 2.246771145958308),
                 new Address("5, av. Mac-Mahon", "Paris - La Défense", "92800"),
                 new TheaterChain("UGC", "81007"),
                 new Shutdown(new Date(), new Date(), "FERMETURE ESTIVALE"));
@@ -100,7 +100,7 @@ public class TheaterRepositoryTest extends BaseTest {
         this.theaterRepository.save(this.theaterToSave);
         assertThat(this.theaterToSave.getId(), notNullValue());
 
-        List<Theater> list = this.theaterRepository.findByGeoLocationLongitude("2.246771145958308");
+        List<Theater> list = this.theaterRepository.findByGeoLocationLongitude(2.246771145958308);
         assertThat(list.size(), is(1));
         assertThat(list.get(0), is(this.theaterToSave));
     }

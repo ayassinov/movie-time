@@ -64,8 +64,8 @@ public class TheaterAPI extends BaseAlloCineAPI {
 
     public List<Theater> findByGeoLocation(GeoLocation geoLocation, int radius, int count) {
         final Builder paramBuilder = Builder.create();
-        paramBuilder.add("lat", geoLocation.getLatitude());
-        paramBuilder.add("long", geoLocation.getLongitude());
+        paramBuilder.add("lat", Double.toString(geoLocation.getLatitude()));
+        paramBuilder.add("long", Double.toString(geoLocation.getLongitude()));
         paramBuilder.add("count", String.valueOf(count));
         paramBuilder.add("radius", String.valueOf(radius));
 
@@ -84,6 +84,10 @@ public class TheaterAPI extends BaseAlloCineAPI {
     public String findByName(String term, int count) {
         Preconditions.checkNotNull(term);
         return search(StringUtils.encode(term), SearchFilterEnum.THEATER, count, String.class);
+    }
+
+    public List<Theater> listAllByCityZip(int zip) {
+        return findByZip(zip, 50, 400);
     }
 
     private List<Theater> listTheater(List<Parameter> parameters) {

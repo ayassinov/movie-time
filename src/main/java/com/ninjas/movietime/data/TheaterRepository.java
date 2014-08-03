@@ -17,6 +17,7 @@
 package com.ninjas.movietime.data;
 
 import com.ninjas.movietime.core.domain.Theater;
+import com.ninjas.movietime.core.domain.TheaterChain;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -40,6 +41,7 @@ public interface TheaterRepository extends MongoRepository<Theater, String> {
     List<Theater> findByNameLikeIgnoreCaseOrderByNameAsc(String name);
 
 
-    List<Theater> findByGeoLocationLongitude(String longitude);
+    List<Theater> findByGeoLocationLongitude(double longitude);
 
+    List<Theater> findByTheaterChain(TheaterChain theaterChain);
 }
