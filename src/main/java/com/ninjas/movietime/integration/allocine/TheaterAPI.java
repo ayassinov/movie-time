@@ -16,84 +16,35 @@
 
 package com.ninjas.movietime.integration.allocine;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.ninjas.movietime.core.domain.GeoLocation;
 import com.ninjas.movietime.core.domain.Theater;
-import com.ninjas.movietime.core.util.StringUtils;
-import com.ninjas.movietime.integration.allocine.request.Builder;
-import com.ninjas.movietime.integration.allocine.request.Parameter;
-import com.ninjas.movietime.integration.allocine.request.SearchFilterEnum;
+import com.ninjas.movietime.integration.allocine.request.RequestBuilder;
 import com.ninjas.movietime.integration.allocine.response.FeedResponse;
 import com.ninjas.movietime.integration.allocine.response.RootResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author ayassinov on 17/07/14
  */
 @Service
-public class TheaterAPI extends BaseAlloCineAPI {
+public class TheaterAPI {
 
-    public TheaterAPI() {
-        super("theaterlist");
-    }
+    private final static String THEATER_PATH = "theaterlist";
+    @Autowired
+    private RestTemplate restTemplate;
 
-    public Optional<Theater> findById(String theaterId) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(theaterId));
-
-        final Builder paramBuilder = Builder.create();
-        paramBuilder.add("code", theaterId);
-
-        final String path = "theater"; //path to one resource
-
-        final Theater theater = get(path, paramBuilder.build()).getTheater();
-        return Optional.fromNullable(theater);
-    }
-
-    public List<Theater> findByLocation(String location, int radius, int count) {
-        final Builder paramBuilder = Builder.create();
-        paramBuilder.add("location", location);
-        paramBuilder.add("count", String.valueOf(count));
-        paramBuilder.add("radius", String.valueOf(radius));
-
-        return listTheater(paramBuilder.build());
-    }
-
-    public List<Theater> findByGeoLocation(GeoLocation geoLocation, int radius, int count) {
-        final Builder paramBuilder = Builder.create();
-        paramBuilder.add("lat", Double.toString(geoLocation.getLatitude()));
-        paramBuilder.add("long", Double.toString(geoLocation.getLongitude()));
-        paramBuilder.add("count", String.valueOf(count));
-        paramBuilder.add("radius", String.valueOf(radius));
-
-        return listTheater(paramBuilder.build());
-    }
-
-    public List<Theater> findByZip(int zip, int radius, int count) {
-        final Builder paramBuilder = Builder.create();
-        paramBuilder.add("zip", String.valueOf(zip));
-        paramBuilder.add("count", String.valueOf(count));
-        paramBuilder.add("radius", String.valueOf(radius));
-
-        return listTheater(paramBuilder.build());
-    }
-
-    public String findByName(String term, int count) {
-        Preconditions.checkNotNull(term);
-        return search(StringUtils.encode(term), SearchFilterEnum.THEATER, count, String.class);
-    }
-
-    public List<Theater> listAllByCityZip(int zip) {
-        return findByZip(zip, 50, 400);
-    }
-
-    private List<Theater> listTheater(List<Parameter> parameters) {
-        final RootResponse rootResponse = get(parameters);
-        final FeedResponse feedResponse = rootResponse.getFeedResponse();
-        Preconditions.checkNotNull(feedResponse, "feedResponse should never be null.");
-        return feedResponse.getTheater();
+    public List<Theater> findAllByRegion(int zip, int radius, int count) {
+        final FeedResponse feedResponse = RequestBuilder
+                .create(THEATER_PATH)
+                .add("zip", "7500")
+                .add("count", "400")
+                .add("radius", "50")
+                .execute(restTemplate, RootResponse.class)
+                .getFeedResponse();
+        return new ArrayList<>();
     }
 }

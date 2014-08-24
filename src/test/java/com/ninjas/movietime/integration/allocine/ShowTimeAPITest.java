@@ -16,34 +16,24 @@
 
 package com.ninjas.movietime.integration.allocine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.ninjas.movietime.core.domain.Showtime;
 import com.ninjas.movietime.integration.BaseAlloCineTest;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * @author ayassinov on 30/07/2014.
  */
 public class ShowTimeAPITest extends BaseAlloCineTest {
 
-    @Autowired
-    private ShowtimeAPI auShowtimeAPI;
+   // @Autowired
+   // private ShowtimeAPI auShowtimeAPI;
 
-    @Test
+    //@Test()
     public void testFindByTheaters() {
         ImmutableList<String> theaterIds = ImmutableList.of("B2619", "B0203", "B0074").asList();
-        List<Showtime> showTimes = auShowtimeAPI.findByTheaters(theaterIds,
-                Optional.<String>absent(),
-                Optional.<Date>absent());
+//        List<Showtime> showTimes = auShowtimeAPI.findByTheaters(theaterIds,
+//                Optional.<String>absent(),
+//                Optional.<Date>absent());
 
-        Assert.assertThat(showTimes.size(), equalTo(3));
+      //  Assert.assertThat(showTimes.size(), equalTo(3));
     }
 }

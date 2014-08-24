@@ -1,10 +1,11 @@
-app:
-  mode: DEV
-  version: ${pom.version}
+movietime:
+  app:
+    mode: DEV
+    version: ${pom.version}
+    bugSnag: 16f3943bcff62960d25dcf14053efb98
   mongo:
     url: mongodb://localhost/hellocinedb
     writeResultChecking: EXCEPTION   #NONE, LOG, EXCEPTION
-  bugSnag: 16f3943bcff62960d25dcf14053efb98
   graphite:
     activate: false
     apiKey: c68abc3f-0356-4f5e-a0c3-062db5ae697b

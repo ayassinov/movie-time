@@ -1,5 +1,6 @@
-app:
-  mode: TEST
+movietime:
+  app:
+    mode: TEST
   mongo:
     url: mongodb://localhost/test
     writeResultChecking: EXCEPTION

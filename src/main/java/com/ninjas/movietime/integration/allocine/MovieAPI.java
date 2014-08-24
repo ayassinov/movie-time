@@ -16,40 +16,34 @@
 
 package com.ninjas.movietime.integration.allocine;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.ninjas.movietime.core.domain.Movie;
-import com.ninjas.movietime.integration.allocine.request.Builder;
-import com.ninjas.movietime.integration.allocine.request.SearchFilterEnum;
 import org.springframework.stereotype.Service;
 
 /**
  * @author ayassinov on 17/07/14
  */
 @Service
-public class MovieAPI extends BaseAlloCineAPI {
+public class MovieAPI  {
 
-
-    public MovieAPI() {
-        super("movie");
-    }
-
-    /**
-     * Get a movie information using the allo cine code.
-     *
-     * @param movieId Code of the film in allo cine.
-     * @return movie details in the json text format
-     * throws IllegalArgumentException if movieId is null or empty
-     */
-    public Optional<Movie> findById(String movieId) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(movieId));
-        final Builder parameterBuilder = Builder.create("code", movieId);
-        final Movie movie = get(parameterBuilder.build()).getMovie();
-        return Optional.fromNullable(movie);
-    }
-
-    public String findByName(String name, int count) {
-        return search(name, SearchFilterEnum.MOVIE, count, String.class);
-    }
+//
+//    public MovieAPI() {
+//        super("movie");
+//    }
+//
+//    /**
+//     * Get a movie information using the allo cine code.
+//     *
+//     * @param movieId Code of the film in allo cine.
+//     * @return movie details in the json text format
+//     * throws IllegalArgumentException if movieId is null or empty
+//     */
+//    public Optional<Movie> findById(String movieId) {
+//        Preconditions.checkArgument(!Strings.isNullOrEmpty(movieId));
+//        final RequestBuilder.Parameter.Builder parameterBuilder = RequestBuilder.Parameter.Builder.create("code", movieId);
+//        final Movie movie = get(parameterBuilder.build()).getMovie();
+//        return Optional.fromNullable(movie);
+//    }
+//
+//    public String findByName(String name, int count) {
+//        return search(name, SearchFilterEnum.MOVIE, count, String.class);
+//    }
 }

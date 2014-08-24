@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.jackson;
+package com.ninjas.movietime.conf.vendor.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;

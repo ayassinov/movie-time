@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.jackson;
+package com.ninjas.movietime.conf.vendor.jackson;
 
 import com.google.common.base.Optional;
 import org.springframework.http.HttpInputMessage;

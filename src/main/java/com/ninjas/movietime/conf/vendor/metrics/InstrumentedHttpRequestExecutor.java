@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.metrics;
+package com.ninjas.movietime.conf.vendor.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
