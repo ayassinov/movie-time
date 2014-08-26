@@ -1,0 +1,12 @@
+language: java
+jdk:
+  - oraclejdk7
+  - openjdk7
+services:
+  - mongodb
+deploy:
+  provider: heroku
+  app: getmovietime
+  api_key:
+    secure: f6wI4KWTITQYs8PZ/Yy3JMa/S0jbXpZGGwfD8683nl65JFxHPDnd/pl2VOQJuTvl4y0rIqCBkSWjrOoEWAi8UDE0qmx4HWMJrKI9OtfQSg5ePjafYUy6tL/IUo+bRE5wbRDX1knxHM/TbLfx09p9lDXhZ1vU2QOukh6B7xVAoUc=
+  on: master
