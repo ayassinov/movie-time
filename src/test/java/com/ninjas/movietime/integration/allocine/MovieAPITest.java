@@ -30,7 +30,7 @@ public class MovieAPITest extends BaseAlloCineTest {
     public void testGetMovie() throws Exception {
 //        final Optional<Movie> response = movieAPI.findById("143067");
 //        Assert.assertThat(response.isPresent(), is(true));
-//        Assert.assertThat(response.get().getCode(), equalTo("143067"));
+//        Assert.assertThat(response.get().getId(), equalTo("143067"));
     }
 
     //@Test

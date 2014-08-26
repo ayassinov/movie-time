@@ -1,7 +1,6 @@
 package com.ninjas.movietime.conf;
 
 import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -100,7 +99,7 @@ public class WebConfig {
         objectMapper.registerModule(new GuavaExtrasModule());
         objectMapper.registerModule(new GuavaModule());
 
-        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+        //objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);

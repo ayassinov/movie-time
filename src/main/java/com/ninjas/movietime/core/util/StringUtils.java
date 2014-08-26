@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 /**
  * @author ayassinov on 17/07/14
  */
-public abstract class StringUtils extends org.springframework.util.StringUtils {
+public abstract class StringUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
 
@@ -49,6 +49,10 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
 
     public static String trimAndTransform(final String text, TextTransformation textTransformation) {
         return transform(text.trim(), textTransformation);
+    }
+
+    public static boolean isNullOrEmpty(String nullString) {
+        return nullString == null || nullString.trim().equals("");
     }
 
     public enum TextTransformation {

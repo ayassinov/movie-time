@@ -53,8 +53,8 @@ public class TheaterService {
         // ignore duplicate theater chain
         final Map<String, TheaterChain> theaterChains = new HashMap<>();
         for (Theater theater : theaters) {
-            if(!theaterChains.containsKey(theater.getTheaterChain().getCode())){
-                theaterChains.put(theater.getTheaterChain().getCode(), theater.getTheaterChain());
+            if(!theaterChains.containsKey(theater.getTheaterChain().getId())){
+                theaterChains.put(theater.getTheaterChain().getId(), theater.getTheaterChain());
             }
         }
 

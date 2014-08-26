@@ -16,67 +16,58 @@
 
 package com.ninjas.movietime.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.ninjas.movietime.core.util.DateUtils;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 /**
  * @author ayassinov on 15/07/14
  */
-@Getter
-@Setter
-@ToString
+@Data
 @TypeAlias("theater")
 @Document(collection = "theaters")
 @EqualsAndHashCode(of = "id")
 public class Theater {
 
     @Id
-    @JsonProperty("code")
-    private String id;
+    private final String id;
 
-    //@Indexed(name = "idx_name")
-    @JsonProperty(value = "name", required = true)
-    private String name;
+    //@Indexed(name = "idx_name", unique = false)
+    private final String name;
 
-    @JsonProperty(value = "geoloc", required = true)
-    private GeoLocation geoLocation;
+    private final GeoLocation geoLocation;
 
-    @JsonUnwrapped
-    private Address adr;
+    private final Address address;
 
     @DBRef
-    @JsonProperty(value = "cinemaChain", required = true)
-    private TheaterChain theaterChain;
+    private final TheaterChain theaterChain;
 
-    @JsonProperty(required = false)
-    private Shutdown shutdown;
+    private final ShutDownStatus shutDownStatus;
 
-    public Theater() {
-    }
+    private final boolean isOpen;
 
-    public Theater(String name, GeoLocation geoLocation,
-                   Address adr, TheaterChain theaterChain, Shutdown shutdown) {
-        this(null, name, geoLocation, adr, theaterChain, shutdown);
-    }
+    private final Date lastUpdate;
 
     public Theater(String id, String name, GeoLocation geoLocation,
-                   Address adr, TheaterChain theaterChain, Shutdown shutdown) {
+                   Address address, TheaterChain theaterChain,
+                   ShutDownStatus shutDownStatus) {
         this.id = id;
         this.name = name;
         this.geoLocation = geoLocation;
-        this.adr = adr;
+        this.address = address;
         this.theaterChain = theaterChain;
-        this.shutdown = shutdown;
+        this.shutDownStatus = shutDownStatus;
+        this.isOpen = checkIfTheaterIsOpen();
+        this.lastUpdate = DateUtils.now();
     }
 
+    private boolean checkIfTheaterIsOpen() {
+        return this.shutDownStatus == null || DateUtils.isBeforeNow(this.shutDownStatus.getDateEnd());
+    }
 }

@@ -53,9 +53,6 @@ public class MovieTimeConfig {
 
     private GraphiteConfig graphite;
 
-    public MovieTimeConfig(){}
-
-
     @PostConstruct
     public void postConstruct() {
         LOG.info("Movie Time Configuration loaded successfully with this parameters: [{}]", toString());
@@ -148,11 +145,13 @@ public class MovieTimeConfig {
         private String password;
     }
 
+
     /**
-    * @author ayassinov on 15/08/14.
-    */
+     * @author ayassinov on 15/08/14.
+     */
     @Getter
     @Setter
+    @ToString
     public static class AppConfig {
         @NotNull(message = "Running Mode is one of (DEV,PROD,TEST)")
         private RunModeEnum mode;
@@ -160,12 +159,11 @@ public class MovieTimeConfig {
         @NotNull(message = "Version cannot be null or empty")
         private String version;
 
-
         private String bugSnag = null;
 
         private String esUrl = null;
 
-        public AppConfig(){
+        public AppConfig() {
 
         }
     }

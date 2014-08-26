@@ -1,13 +1,12 @@
-package com.ninjas.movietime.integration.allocine.request;
+package com.ninjas.movietime.integration.allocine;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -18,63 +17,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Util class that help building an URI to call AlloCine REST API
+ *
  * @author ayassinov on 24/08/14.
  */
 public class RequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestBuilder.class);
 
-   // @Autowired
-   // private RestTemplate restTemplate;
-
-   // @Autowired
-//    private MetricRegistry registry;
-
-  //  @Autowired
-   // private Client bugSnag;
-
     private final List<Parameter> parameters;
     private final String path;
 
-    private RequestBuilder(String path) {
+    /**
+     * Private constructor used only by the Builder
+     *
+     * @param path the path of the url
+     */
+    private RequestBuilder(final @NonNull String path) {
         this.path = path;
         this.parameters = new ArrayList<>();
     }
 
+    /**
+     * The enter point to use the builder
+     *
+     * @param path the path parameter
+     * @return the RequestBuilder
+     */
     public static RequestBuilder create(final String path) {
-        return new RequestBuilder(path);
+        final RequestBuilder requestBuilder = new RequestBuilder(path);
+        LOG.trace("RequestBuilder was created with path={}", path);
+        return requestBuilder;
     }
 
-    public RequestBuilder add(String name, String value) {
+    /**
+     * Add url parameter using int value
+     *
+     * @param name  the name of the parameter
+     * @param value the int value
+     * @return the RequestBuilder
+     */
+    public RequestBuilder add(@NonNull final String name, final int value) {
+        final String StringValue = String.valueOf(value);
+        add(name, StringValue);
+        LOG.trace("URL parameter added name={} value={}", name, value);
+        return this;
+    }
+
+    /**
+     * Add url parameter using String value
+     *
+     * @param name  the name of the parameter
+     * @param value the string value
+     * @return the RequestBuilder
+     */
+    public RequestBuilder add(@NonNull final String name, @NonNull final String value) {
         parameters.add(new Parameter(name, value));
         return this;
     }
 
-    public <T> T execute(RestTemplate restTemplate, Class<T> clazz) {
+    /**
+     * Build the url using the path and url parameters
+     *
+     * @return full URI signed to use for calling AlloCine REST API
+     */
+    public URI build() {
         final URI uri = UrlBuilder.create(this.path, this.parameters);
-        //metrics
-        //final Timer.Context timerContext = timer("execute").time();
-        try {
-            //if (method.equals(MethodEnum.GET)) We have only GETs
-            return restTemplate.getForObject(uri, clazz);
-        } catch (RestClientException restEx) {
-            //notify bugSnag
-            //bugSnag.notify(restEx);
-            //log error
-            LOG.error("HTTP GET request ended with error", restEx);
-            //rethrow
-            throw restEx;
-        } finally {
-            //get duration
-            //final long duration = timerContext.stop();
-            //LOG.trace("GET HTTP request executed in {} ms", duration);
-        }
+        LOG.trace("URI created {}", uri.toString());
+        return uri;
     }
 
-//    private Timer timer(String methodName) {
-//        return registry.timer(this.getClass().getCanonicalName() + methodName + "(" + path + ")");
-//    }
-
+    /**
+     * Class to create and sign uri to use for calling AlloCine REST API
+     */
     private static class UrlBuilder {
         private static final String BASE_URI = "http://api.allocine.fr/rest/v3";
         private static final String SECRET = "29d185d98c984a359e6e6f26a0474269";
@@ -83,7 +98,7 @@ public class RequestBuilder {
         private static final Logger LOG = LoggerFactory.getLogger(UrlBuilder.class);
 
         /**
-         * Create the full url to call the BaseAlloCineAPI
+         * Create the full url to for calling AlloCine REST API
          *
          * @param path       the path of the url
          * @param parameters list of url parameters
@@ -177,6 +192,9 @@ public class RequestBuilder {
         }
 
         @Override
+        /***
+         * Useful to have a format ready url parameters
+         */
         public String toString() {
             return String.format("%s=%s", name, value);
         }

@@ -16,8 +16,6 @@
 
 package com.ninjas.movietime.core.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -29,21 +27,15 @@ import java.util.Date;
  */
 @Getter
 @ToString
-@EqualsAndHashCode(of = {"dateStart", "dateEnd", "reason"})
-public class Shutdown {
+@EqualsAndHashCode(of = {"dateStart", "dateEnd"})
+public class ShutDownStatus {
 
     private final Date dateStart;
 
     private final Date dateEnd;
 
-    private final String reason;
-
-    @JsonCreator
-    public Shutdown(@JsonProperty("dateStart") Date dateStart,
-                    @JsonProperty("dateEnd") Date dateEnd,
-                    @JsonProperty("$") String reason) {
+    public ShutDownStatus(Date dateStart, Date dateEnd) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
-        this.reason = reason;
     }
 }
