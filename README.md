@@ -1,4 +1,4 @@
-MovieTime [![Build Status](https://travis-ci.org/ayassinov/MovieTime.svg?branch=build)](https://travis-ci.org/ayassinov/MovieTime)
+MovieTime [![Build Status](https://travis-ci.org/ayassinov/MovieTime.svg?branch=master)](https://travis-ci.org/ayassinov/MovieTime)
 =========
 Find where to watch your best movie with no time.
 
