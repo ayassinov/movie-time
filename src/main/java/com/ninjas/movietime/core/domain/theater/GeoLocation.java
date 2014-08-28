@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.domain;
+package com.ninjas.movietime.core.domain.theater;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
- * @author ayassinov on 25/07/14
+ * @author ayassinov on 16/07/14
  */
 @Getter
 @ToString
-@EqualsAndHashCode(of = {"address", "city", "postalCode"})
-public class Address {
+@EqualsAndHashCode(of = {"longitude", "latitude"})
+public class GeoLocation {
 
-    private final String address;
+    private final double latitude;
 
-    @Indexed
-    private final String city;
-
-    @Indexed
-    private final String postalCode;
+    private final double longitude;
 
     @JsonCreator
-    public Address(@JsonProperty("address") String address,
-                   @JsonProperty("city") String city,
-                   @JsonProperty("postalCode") String postalCode) {
-        this.address = address;
-        this.city = city;
-        this.postalCode = postalCode;
+    public GeoLocation(@JsonProperty("lat") double latitude,
+                       @JsonProperty("long") double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

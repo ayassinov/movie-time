@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.integration.allocine.response;
+package com.ninjas.movietime.core.domain.theater;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ninjas.movietime.core.domain.Movie;
-import com.ninjas.movietime.core.domain.Theater;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Date;
 
 /**
- * @author ayassinov on 31/07/2014.
+ * @author ayassinov
  */
 @Getter
-@Setter
-public class RootResponse {
+@ToString
+@EqualsAndHashCode(of = {"dateStart", "dateEnd"})
+public class ShutDownStatus {
 
-    @JsonProperty(value = "feed")
-    private FeedResponse feedResponse;
+    private final Date dateStart;
 
-    private Movie movie;
+    private final Date dateEnd;
 
-    private Theater theater;
+    public ShutDownStatus(Date dateStart, Date dateEnd) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+    }
 }

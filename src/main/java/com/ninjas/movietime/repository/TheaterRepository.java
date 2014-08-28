@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.data;
+package com.ninjas.movietime.repository;
 
-import com.ninjas.movietime.core.domain.Theater;
-import com.ninjas.movietime.core.domain.TheaterChain;
+import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.domain.theater.TheaterChain;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

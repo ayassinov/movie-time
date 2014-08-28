@@ -16,16 +16,12 @@
 
 package com.ninjas.movietime.service;
 
-import com.ninjas.movietime.core.domain.Theater;
-import com.ninjas.movietime.core.domain.TheaterChain;
-import com.ninjas.movietime.data.TheaterRepository;
-import com.ninjas.movietime.integration.allocine.TheaterAPI;
+import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.repository.TheaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ayassinov on 16/07/14
@@ -33,50 +29,14 @@ import java.util.Map;
 @Service
 public class TheaterService {
 
-    private final TheaterAPI theaterAPI;
-
     private final TheaterRepository theaterRepository;
 
-
     @Autowired
-    public TheaterService(TheaterAPI theaterAPI,  TheaterRepository theaterRepository) {
-        this.theaterAPI = theaterAPI;
-
+    public TheaterService(TheaterRepository theaterRepository) {
         this.theaterRepository = theaterRepository;
     }
 
-    public List<Theater> update() {
-        // list all theaters in paris.
-        final int parisZip = 75000;
-        final List<Theater> theaters =null; //this.theaterAPI.listAllByCityZip(parisZip);
-
-        // ignore duplicate theater chain
-        final Map<String, TheaterChain> theaterChains = new HashMap<>();
-        for (Theater theater : theaters) {
-            if(!theaterChains.containsKey(theater.getTheaterChain().getId())){
-                theaterChains.put(theater.getTheaterChain().getId(), theater.getTheaterChain());
-            }
-        }
-
-        //same theater chains
-       // this.theaterChainRepository.save(theaterChains.values());
-
-        //save theaters
-        this.theaterRepository.save(theaters);
-
-        return theaters;
+    public List<Theater> listAll() {
+        return theaterRepository.findAll();
     }
-
-
-    public List<TheaterChain> listAllWithTheaters(){
-        //list theaters grouped by theater chain.
-        final List<TheaterChain> theaterChains = null;//theaterChainRepository.findAll();
-        for (TheaterChain theaterChain : theaterChains) {
-            theaterChain.setTheaters(theaterRepository.findByTheaterChain(theaterChain));
-        }
-
-        return theaterChains;
-    }
-
-
 }

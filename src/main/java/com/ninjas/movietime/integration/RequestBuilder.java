@@ -1,4 +1,4 @@
-package com.ninjas.movietime.integration.allocine;
+package com.ninjas.movietime.integration;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
@@ -93,7 +93,7 @@ public class RequestBuilder {
     private static class UrlBuilder {
         private static final String BASE_URI = "http://api.allocine.fr/rest/v3";
         private static final String SECRET = "29d185d98c984a359e6e6f26a0474269";
-        private static final String DEFAULT_PARAMS = "format=json&partner=100043982026&profile=large";
+        private static final String DEFAULT_PARAMS = "format=json&partner=100043982026&profile=medium";
 
         private static final Logger LOG = LoggerFactory.getLogger(UrlBuilder.class);
 

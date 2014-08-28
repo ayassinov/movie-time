@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.service;
+package com.ninjas.movietime.integration;
 
-import com.ninjas.movietime.data.TheaterRepository;
-import com.ninjas.movietime.integration.allocine.MovieAPI;
+import com.ninjas.movietime.BaseTest;
+import com.ninjas.movietime.core.domain.theater.Theater;
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.greaterThan;
 
 /**
- * @author ayassinov on 16/07/14
+ * @author ayassinov on 17/07/14
  */
-@Service
-public class MovieService {
 
-    private final MovieAPI movieAPI;
-
-    private final TheaterRepository theaterRepository;
+public class AlloCineAPITest extends BaseTest {
 
     @Autowired
-    public MovieService(MovieAPI movieAPI, TheaterRepository theaterRepository) {
-        this.movieAPI = movieAPI;
-        this.theaterRepository = theaterRepository;
+    private AlloCineAPI alloCineAPI;
+
+    @Test
+    public void testFindAllInParis() {
+        final List<Theater> allInParis = alloCineAPI.findAllInParis();
+        Assert.assertThat(allInParis.size(), greaterThan(0));
     }
 }

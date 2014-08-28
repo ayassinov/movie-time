@@ -2,6 +2,7 @@ package com.ninjas.movietime.core.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.Date;
 
@@ -37,5 +38,11 @@ public final class DateUtils {
         if (StringUtils.isNullOrEmpty(date))
             return null;
         return DateTime.parse(date).toDate();
+    }
+
+    public static Date parse(String date, String format) {
+        if (StringUtils.isNullOrEmpty(date))
+            return null;
+        return DateTime.parse(date, DateTimeFormat.forPattern(format)).toDate();
     }
 }

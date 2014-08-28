@@ -17,6 +17,7 @@
 package com.ninjas.movietime.core.domain;
 
 import com.ninjas.movietime.BaseTest;
+import com.ninjas.movietime.core.domain.theater.GeoLocation;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;

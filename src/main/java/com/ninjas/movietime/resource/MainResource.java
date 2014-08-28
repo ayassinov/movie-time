@@ -31,15 +31,18 @@ import static com.codahale.metrics.MetricRegistry.name;
 @RequestMapping("/")
 public class MainResource {
 
+    private final MetricRegistry metrics;
+
     @Autowired
-    private MetricRegistry metrics;
+    public MainResource(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public String main() {
         metrics.meter(name("meter", "MainResource", "main", "request")).mark();
         return "YO ! MAN!";
     }
-
 
     /**
      * for new relic ping

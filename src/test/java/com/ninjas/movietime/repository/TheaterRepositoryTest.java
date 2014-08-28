@@ -14,29 +14,45 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.domain;
+package com.ninjas.movietime.repository;
 
 import com.ninjas.movietime.BaseTest;
-import com.ninjas.movietime.core.domain.theater.GeoLocation;
 import com.ninjas.movietime.core.domain.theater.Theater;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+
 
 /**
  * @author ayassinov on 16/07/14
  */
-public class TheaterTest extends BaseTest {
+public class TheaterRepositoryTest extends BaseTest {
 
+    @Autowired
+    private TheaterRepository theaterRepository;
+
+    @Before
+    public void initialize() {
+        this.theaterRepository.deleteAll();
+    }
+
+    @After
+    public void tearDown() {
+        theaterRepository.deleteAll();
+        assertThat(theaterRepository.findAll().size(), is(0));
+    }
 
     @Test
-    public void testEquals() {
-        final Theater theaterA = new Theater("1", "A", new GeoLocation(1.0, 1.0), null, null, null);
-        final Theater theaterB = new Theater("1", "B", new GeoLocation(1.0, 1.0), null, null, null);
-        final Theater theaterC = new Theater("2", "A", new GeoLocation(1.0, 1.0), null, null, null);
-        assertThat(theaterA, equalTo(theaterB));
-        assertThat(theaterA, not(equalTo(theaterC)));
+    public void test() {
+        final List<Theater> theaters = theaterRepository.findAll();
+        Assert.assertThat(theaters.size(), Matchers.greaterThan(0));
     }
 }

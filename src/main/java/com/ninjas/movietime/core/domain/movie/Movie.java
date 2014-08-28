@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.domain;
+package com.ninjas.movietime.core.domain.movie;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.ninjas.movietime.core.domain.showtime.Showtime;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author ayassinov on 30/07/2014.
  */
-@Getter
-@Setter
-@ToString
+@Data
+@TypeAlias("movie")
+@Document(collection = "movies")
 @EqualsAndHashCode(of = "id")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movie {
@@ -36,7 +40,20 @@ public class Movie {
     @Id
     private String id;
 
-    private String code;
+    private Date releaseDate;
 
-    private int productionYear;
+    private GenreEnum genreEnum;
+
+    private Rating rating;
+
+    //private final int productionYear;
+
+    private List<Showtime> showtime = new ArrayList<>();
+
+    public Movie() {
+    }
+
+    public Movie(String id) {
+        this.id = id;
+    }
 }

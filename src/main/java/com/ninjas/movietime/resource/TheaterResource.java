@@ -16,10 +16,11 @@
 
 package com.ninjas.movietime.resource;
 
-import com.ninjas.movietime.core.domain.TheaterChain;
+import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -38,16 +39,8 @@ public class TheaterResource {
         this.theaterService = theaterService;
     }
 
-    @RequestMapping("/update")
-    public String doUpdate() {
-        this.theaterService.update();
-        return "Done";
+    @RequestMapping(method = RequestMethod.GET)
+    public List<Theater> all() {
+        return theaterService.listAll();
     }
-
-    @RequestMapping("/chain")
-    public List<TheaterChain> listAllWithTheaters(){
-        return this.theaterService.listAllWithTheaters();
-    }
-
-
 }

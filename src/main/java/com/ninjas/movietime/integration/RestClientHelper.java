@@ -1,4 +1,4 @@
-package com.ninjas.movietime.integration.allocine;
+package com.ninjas.movietime.integration;
 
 import com.bugsnag.Client;
 import com.codahale.metrics.MetricRegistry;
@@ -23,9 +23,9 @@ import java.net.URI;
  * @author ayassinov on 26/08/2014.
  */
 @Component
-public class AlloCineAPIHelper {
+public class RestClientHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AlloCineAPIHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RestClientHelper.class);
 
     private final RestTemplate restTemplate;
 
@@ -38,8 +38,8 @@ public class AlloCineAPIHelper {
     private final String className = this.getClass().getCanonicalName();
 
     @Autowired
-    public AlloCineAPIHelper(@NonNull RestTemplate restTemplate, @NonNull ObjectMapper objectMapper,
-                             MetricRegistry metricRegistry, Client bugSnagClient) {
+    public RestClientHelper(@NonNull RestTemplate restTemplate, @NonNull ObjectMapper objectMapper,
+                            MetricRegistry metricRegistry, Client bugSnagClient) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.metricRegistry = metricRegistry;
@@ -53,7 +53,7 @@ public class AlloCineAPIHelper {
             return restTemplate.getForObject(uri, clazz);
         } catch (RestClientException ex) {
             processException(ex);
-            throw new AlloCineRestClientException();
+            throw ex;
         } finally {
             processMetrics(timer);
         }
@@ -64,12 +64,12 @@ public class AlloCineAPIHelper {
         try {
             final ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
             if (response.getStatusCode() != HttpStatus.OK)
-                throw new AlloCineRestClientException();
+                throw new RestClientException("HTTP Response NON OK. got = " + response.getStatusCode());
 
             return objectMapper.readTree(response.getBody());
         } catch (RestClientException | IOException ex) {
             processException(ex);
-            throw new AlloCineRestClientException();
+            throw new RestClientException("Json Response error.", ex);
         } finally {
             processMetrics(timer);
         }
@@ -95,10 +95,6 @@ public class AlloCineAPIHelper {
             final long duration = timer.get().stop();
             LOG.trace("GET HTTP request executed in {} ms", duration);
         }
-    }
-
-    public static class AlloCineRestClientException extends RuntimeException {
-
     }
 
 }

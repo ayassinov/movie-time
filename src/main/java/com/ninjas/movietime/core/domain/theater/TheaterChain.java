@@ -14,60 +14,55 @@
  * limitations under the License.
  */
 
-package com.ninjas.movietime.core.domain;
+package com.ninjas.movietime.core.domain.theater;
 
+import com.newrelic.deps.com.google.common.collect.ImmutableList;
 import com.ninjas.movietime.core.util.DateUtils;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 /**
- * @author ayassinov on 15/07/14
+ * @author ayassinov on 25/07/14
  */
-@Data
-@TypeAlias("theater")
-@Document(collection = "theaters")
+@Getter
+@ToString
+@TypeAlias("theaterChains")
+@Document(collection = "theaterChain")
 @EqualsAndHashCode(of = "id")
-public class Theater {
+public class TheaterChain {
+
+    private static final List<String> OFFICIAL_THEATER_CHAIN = ImmutableList
+            .of("81001", "81002", "81003", "81004")
+            .asList();
 
     @Id
     private final String id;
 
-    //@Indexed(name = "idx_name", unique = false)
+    @Indexed
     private final String name;
 
-    private final GeoLocation geoLocation;
-
-    private final Address address;
-
-    @DBRef
-    private final TheaterChain theaterChain;
-
-    private final ShutDownStatus shutDownStatus;
-
-    private final boolean isOpen;
+    private final boolean isTracked;
 
     private final Date lastUpdate;
 
-    public Theater(String id, String name, GeoLocation geoLocation,
-                   Address address, TheaterChain theaterChain,
-                   ShutDownStatus shutDownStatus) {
+    @Setter
+    @Transient
+    private List<Theater> theaters;
+
+    public TheaterChain(String id, String name) {
         this.id = id;
         this.name = name;
-        this.geoLocation = geoLocation;
-        this.address = address;
-        this.theaterChain = theaterChain;
-        this.shutDownStatus = shutDownStatus;
-        this.isOpen = checkIfTheaterIsOpen();
         this.lastUpdate = DateUtils.now();
-    }
-
-    private boolean checkIfTheaterIsOpen() {
-        return this.shutDownStatus == null || DateUtils.isBeforeNow(this.shutDownStatus.getDateEnd());
+        this.isTracked = OFFICIAL_THEATER_CHAIN.contains(id);
     }
 }
