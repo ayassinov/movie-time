@@ -3,9 +3,7 @@ package com.ninjas.movietime.core.domain.showtime;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author ayassinov on 28/08/2014.
@@ -14,10 +12,7 @@ import java.util.List;
 @ToString
 public class Schedule {
 
-   /* public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");*/
-
-    private List<Date> dates = new ArrayList<>();
+    private List<DateAndTime> dateAndTimes = new ArrayList<>();
 
     // private LanguageEnum language;
 
@@ -32,8 +27,15 @@ public class Schedule {
     public Schedule() {
     }
 
-    public void addDateTime(Date date) {
-        dates.add(date);
+    public void addDateAndTime(DateAndTime dateAndTime) {
+        this.dateAndTimes.add(dateAndTime);
+    }
+
+    public void addDateAndTime(Collection<DateAndTime> dateAndTimes) {
+        if (this.dateAndTimes.size() > 0)
+            throw new IllegalArgumentException("Cann't add a list of DateAndTime to not empty existing list");
+
+        this.dateAndTimes.addAll(dateAndTimes);
     }
 
     @Data

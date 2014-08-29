@@ -18,9 +18,12 @@ package com.ninjas.movietime.core.domain.theater;
 
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.util.DateUtils;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,51 +35,59 @@ import java.util.List;
 /**
  * @author ayassinov on 15/07/14
  */
-@Data
+@Getter
+@ToString
 @TypeAlias("theater")
 @Document(collection = "theaters")
 @EqualsAndHashCode(of = "id")
 public class Theater {
 
     @Id
-    private String id;
+    private final String id;
 
     //@Indexed(name = "idx_name", unique = false)
-    private String name;
+    private final String name;
 
-    private GeoLocation geoLocation;
+    private final GeoLocation geoLocation;
 
-    private Address address;
+    private final Address address;
 
     @DBRef
-    private TheaterChain theaterChain;
+    private final TheaterChain theaterChain;
 
-    private ShutDownStatus shutDownStatus;
+    private final ShutDownStatus shutDownStatus;
 
     private boolean isOpen;
 
-    private Date lastUpdate;
+    private final Date lastUpdate;
 
+    @Transient
     private List<Showtime> showtime = new ArrayList<>();
 
-    public Theater() {
-    }
-
     public Theater(String id) {
-        this.id = id;
+        this(id, null, null, null, null, null, false, null);
     }
 
     public Theater(String id, String name, GeoLocation geoLocation,
                    Address address, TheaterChain theaterChain,
                    ShutDownStatus shutDownStatus) {
+        this(id, name, geoLocation, address, theaterChain, shutDownStatus, false, DateUtils.now());
+        this.isOpen = checkIfTheaterIsOpen();
+    }
+
+    @PersistenceConstructor
+    public Theater(String id, String name, GeoLocation geoLocation,
+                   Address address, TheaterChain theaterChain,
+                   ShutDownStatus shutDownStatus, boolean isOpen, Date lastUpdate) {
         this.id = id;
         this.name = name;
         this.geoLocation = geoLocation;
         this.address = address;
         this.theaterChain = theaterChain;
         this.shutDownStatus = shutDownStatus;
-        this.isOpen = checkIfTheaterIsOpen();
-        this.lastUpdate = DateUtils.now();
+        this.isOpen = isOpen;
+        this.lastUpdate = lastUpdate;
+
     }
 
     private boolean checkIfTheaterIsOpen() {

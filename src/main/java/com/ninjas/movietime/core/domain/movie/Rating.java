@@ -1,14 +1,24 @@
 package com.ninjas.movietime.core.domain.movie;
 
+import lombok.Data;
+
 /**
  * @author ayassinov on 28/08/2014.
  */
+@Data
 public class Rating {
 
-    private int pressRating;
-    private int userRating;
-    private int imdbRating;
-    private int rottenRating;
-    private int trackTvRating;
+    private double pressRating;
+    private double userRating;
+    private double imdbRating;
+    private double rottenRating;
+    private double trackTvRating;
 
+    public Rating() {
+    }
+
+    public Rating(double pressRating, double userRating) {
+        this.pressRating = pressRating;
+        this.userRating = userRating;
+    }
 }

@@ -3,6 +3,7 @@ package com.ninjas.movietime.service;
 import com.ninjas.movietime.BaseTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,12 +16,14 @@ public class IntegrationServiceTest extends BaseTest {
     private IntegrationService integrationService;
 
     @Test
+    @Ignore
     public void testIntegrateTheaters() {
         integrationService.integrateTheaters();
         Assert.assertThat(true, Matchers.is(true));
     }
 
     @Test
+    @Ignore
     public void testUpdateShowtime() {
         integrationService.updateShowtime();
         Assert.assertThat(true, Matchers.is(true));

@@ -1,5 +1,6 @@
 package com.ninjas.movietime.service;
 
+import com.ninjas.movietime.core.domain.UpdateTracking;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.core.domain.theater.TheaterChain;
@@ -37,34 +38,51 @@ public class IntegrationService {
             mongoTemplate.save(theater.getTheaterChain());
             mongoTemplate.save(theater);
         }
+        //track update
+        mongoTemplate.save(new UpdateTracking(UpdateTracking.OperationEnum.THEATER_UPDATE, true,
+                "DONE WITH SUCCESS"));
     }
 
     public void updateShowtime() {
         //find official theaterChain
-        final Query theaterChainQuery = Query.query(Criteria.where("isTracked").is(true));
-        LOG.debug(theaterChainQuery.toString());
-
-
-        final List<TheaterChain> theaterChains = mongoTemplate.find(theaterChainQuery, TheaterChain.class);
-        for (final TheaterChain chain : theaterChains) {
-            if (chain.getId().equalsIgnoreCase("81001")) {
-                final Query theaterQuery = Query.query(Criteria.where("theaterChain").is(chain).and("isOpen").is(true));
-                LOG.debug(theaterQuery.toString());
-                final List<Theater> theaters = mongoTemplate.find(theaterQuery, Theater.class);
+        final List<TheaterChain> theaterChains = listAllTheaterChain(true);
+        //iterate over every chain to get the theaters list
+        for (final TheaterChain theaterChain : theaterChains) {
+            if (theaterChain.getId().equalsIgnoreCase("81001")) {
+                final List<Theater> theaters = listOpenTheaterByTheaterChain(theaterChain);
                 final List<Showtime> showtimes = alloCineAPI.findShowtime(theaters);
-                for (Showtime showtime : showtimes)
-                    mongoTemplate.save(showtime);
-            }
 
+                //todo bulk save
+                for (Showtime showtime : showtimes) {
+                    mongoTemplate.save(showtime.getMovie());
+                    mongoTemplate.save(showtime);
+                }
+            }
         }
     }
 
-    public void updateMovies() {
+    private List<TheaterChain> listAllTheaterChain(boolean isOnlyTracked) {
+        final List<TheaterChain> theaterChains;
+        if (isOnlyTracked) {
+            final Query theaterChainQuery = Query.query(Criteria.where("isTracked").is(true));
+            theaterChains = mongoTemplate.find(theaterChainQuery, TheaterChain.class);
+        } else {
+            theaterChains = mongoTemplate.findAll(TheaterChain.class);
+        }
+        return theaterChains;
+    }
+
+    private List<Theater> listOpenTheaterByTheaterChain(TheaterChain theaterChain) {
+        final Query theaterQuery = Query.query(Criteria.where("theaterChain").is(theaterChain).and("isOpen").is(true));
+        return mongoTemplate.find(theaterQuery, Theater.class);
+    }
+
+   /* public void updateMovies() {
 
     }
 
     public void integrateUpComingMovies() {
 
-    }
+    }*/
 
 }

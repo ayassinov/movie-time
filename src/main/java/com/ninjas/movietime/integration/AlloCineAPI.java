@@ -18,6 +18,9 @@ package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
+import com.ninjas.movietime.core.domain.movie.Movie;
+import com.ninjas.movietime.core.domain.movie.Rating;
+import com.ninjas.movietime.core.domain.showtime.DateAndTime;
 import com.ninjas.movietime.core.domain.showtime.Schedule;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.*;
@@ -94,13 +97,56 @@ public class AlloCineAPI {
                 node.path("screenFormat").path("code").asText(),
                 node.path("screenFormat").path("$").asText()));
 
+        final String dateFormat = "yyyy-MM-dd";
+        final String timeFormat = "HH:mm";
+        final Map<Date, DateAndTime> dateAndTimeMap = new HashMap<>();
         for (JsonNode nodeDateTime : node.path("scr")) {
+            Date currentDate = DateUtils.parse(nodeDateTime.path("d").asText(), dateFormat);
+            DateAndTime dateAndTime;
             for (JsonNode nodeTime : nodeDateTime.path("t")) {
-                schedule.addDateTime(DateUtils.parse(nodeDateTime.path("d").asText() + " " + nodeTime.path("$").asText(), "yyyy-MM-dd HH:mm"));
+                if (dateAndTimeMap.containsKey(currentDate)) {
+                    dateAndTimeMap.get(currentDate).addTime(nodeTime.path("$").asText(), timeFormat);
+                } else {
+                    dateAndTime = new DateAndTime(currentDate);
+                    dateAndTime.addTime(nodeTime.path("$").asText(), timeFormat);
+                    dateAndTimeMap.put(currentDate, dateAndTime);
+                }
             }
         }
-
+        schedule.addDateAndTime(dateAndTimeMap.values());
         return schedule;
+    }
+
+    private Movie createMovie(final JsonNode node) {
+        final Rating rating = new Rating(
+                node.path("onShow").path("movie").path("statistics").path("pressRating").asDouble(),
+                node.path("onShow").path("movie").path("statistics").path("userRating").asDouble()
+        );
+
+        final List<String> directors =
+                Arrays.asList(node.path("onShow").path("movie").path("castingShort").path("directors").asText().split(","));
+
+        final List<String> actors =
+                Arrays.asList(node.path("onShow").path("movie").path("castingShort").path("actors").asText().split(","));
+
+        final List<Movie.Genre> genres = new ArrayList<>();
+        for (JsonNode genreNode : node.path("onShow").path("movie").path("genre")) {
+            genres.add(new Movie.Genre(
+                    genreNode.path("code").asText(),
+                    genreNode.path("$").asText()
+            ));
+        }
+
+        return new Movie(
+                node.path("onShow").path("movie").path("code").asText(),
+                node.path("onShow").path("movie").path("title").asText(),
+                DateUtils.parse(node.path("onShow").path("movie").path("release").path("releaseDate").asText(), "yyyy-MM-dd"),
+                node.path("onShow").path("movie").path("runtime").asInt(),
+                rating,
+                genres,
+                directors,
+                actors
+        );
     }
 
     private Collection<Showtime> createShowtime(final JsonNode node) {
@@ -113,12 +159,12 @@ public class AlloCineAPI {
             if (showtimeMap.containsKey(codeMovie)) {
                 showtimeMap.get(codeMovie).addSchedule(createSchedule(nodeShowtime));
             } else {
-                showtime = new Showtime(codeTheater, codeMovie);
+                showtime = new Showtime(new Theater(codeTheater), createMovie(nodeShowtime));
                 showtime.addSchedule(createSchedule(nodeShowtime));
                 showtimeMap.put(codeMovie, showtime);
             }
         }
-        return  showtimeMap.values();
+        return showtimeMap.values();
     }
 
     private Theater createTheater(final JsonNode node) {

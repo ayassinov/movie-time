@@ -19,16 +19,11 @@ package com.ninjas.movietime.repository;
 import com.ninjas.movietime.BaseTest;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 
 
 /**
@@ -38,17 +33,6 @@ public class TheaterRepositoryTest extends BaseTest {
 
     @Autowired
     private TheaterRepository theaterRepository;
-
-    @Before
-    public void initialize() {
-        this.theaterRepository.deleteAll();
-    }
-
-    @After
-    public void tearDown() {
-        theaterRepository.deleteAll();
-        assertThat(theaterRepository.findAll().size(), is(0));
-    }
 
     @Test
     public void test() {

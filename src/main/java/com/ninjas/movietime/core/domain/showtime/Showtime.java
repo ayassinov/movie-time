@@ -18,11 +18,14 @@ package com.ninjas.movietime.core.domain.showtime;
 
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.theater.Theater;
-import lombok.Data;
+import com.ninjas.movietime.core.util.DateUtils;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -33,32 +36,42 @@ import java.util.List;
 /**
  * @author ayassinov on 31/07/2014.
  */
-@Data
+@Getter
+@ToString
 @TypeAlias("showtime")
 @Document(collection = "showtimes")
 @EqualsAndHashCode(of = "id")
 public class Showtime {
 
     @Id
-    private String id;
+    private final String id;
 
     @DBRef
-    private Theater theater;
+    @Indexed
+    private final Theater theater;
 
     @DBRef
-    private Movie movie;
+    @Indexed
+    private final Movie movie;
 
-    private Date lastUpdate;
+    private final Date lastUpdate;
 
     private final List<Schedule> schedules = new ArrayList<>();
 
-    public Showtime() {
+    public Showtime(String theaterId, String movieCode) {
+        this(new Theater(theaterId), new Movie(movieCode));
     }
 
-    public Showtime(String theaterId, String movieCode) {
-        this.theater = new Theater(theaterId);
-        this.movie = new Movie(movieCode);
+    @PersistenceConstructor
+    public Showtime(Theater theater, Movie movie) {
+        this.id = String.format("%s_%s", theater.getId(), movie.getId());
+        this.theater = theater;
+        this.movie = movie;
+        this.lastUpdate = DateUtils.now();
+        this.getTheater().getShowtime().add(this);
+        this.getMovie().getShowtime().add(this);
     }
+
 
     public void addSchedule(Schedule schedule) {
         this.schedules.add(schedule);

@@ -16,10 +16,14 @@
 
 package com.ninjas.movietime.core.domain.movie;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -30,30 +34,63 @@ import java.util.List;
 /**
  * @author ayassinov on 30/07/2014.
  */
-@Data
+@Getter
+@ToString
 @TypeAlias("movie")
 @Document(collection = "movies")
 @EqualsAndHashCode(of = "id")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Movie {
 
     @Id
-    private String id;
+    private final String id;
 
-    private Date releaseDate;
+    private final String title;
 
-    private GenreEnum genreEnum;
+    private final Date releaseDate;
 
-    private Rating rating;
+    private final int runtime;
+
+    private final Rating rating;
+
+    private final List<Genre> genres;
+
+    private final List<String> directors;
+
+    private final List<String> actors;
+
+    @Transient
+    private List<Showtime> showtime = new ArrayList<>();
 
     //private final int productionYear;
 
-    private List<Showtime> showtime = new ArrayList<>();
-
-    public Movie() {
+    public Movie(String id) {
+        this(id, null, null, 0, null
+                , new ArrayList<Genre>()
+                , new ArrayList<String>()
+                , new ArrayList<String>());
     }
 
-    public Movie(String id) {
+    @PersistenceConstructor
+    public Movie(String id, String title, Date releaseDate, int runtime,
+                 Rating rating, List<Genre> genres, List<String> directors, List<String> actors) {
         this.id = id;
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.runtime = runtime;
+        this.rating = rating;
+        this.genres = genres;
+        this.directors = directors;
+        this.actors = actors;
+    }
+
+    @Data
+    public static class Genre {
+        private String code;
+        private String name;
+
+        public Genre(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
     }
 }
