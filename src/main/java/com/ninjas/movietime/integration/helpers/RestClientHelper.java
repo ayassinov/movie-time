@@ -1,4 +1,4 @@
-package com.ninjas.movietime.integration;
+package com.ninjas.movietime.integration.helpers;
 
 import com.bugsnag.Client;
 import com.codahale.metrics.MetricRegistry;

@@ -28,4 +28,27 @@ public class IntegrationServiceTest extends BaseTest {
         integrationService.updateShowtime();
         Assert.assertThat(true, Matchers.is(true));
     }
+
+    @Test
+    @Ignore
+    public void testUpdateImdbMovieCode() {
+        integrationService.updateImdbCode();
+        Assert.assertThat(true, Matchers.is(true));
+
+    }
+
+
+    @Test
+    @Ignore
+    public void testUpdateRottenTomatoesCode() {
+        integrationService.updateRottenTomatoesCode();
+        Assert.assertThat(true, Matchers.is(true));
+    }
+
+    @Test
+    @Ignore
+    public void testUpdateTraktTvInformation() {
+        integrationService.updateTraktTvInformation();
+        Assert.assertThat(true, Matchers.is(true));
+    }
 }

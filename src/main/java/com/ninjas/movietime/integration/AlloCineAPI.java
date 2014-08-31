@@ -25,6 +25,10 @@ import com.ninjas.movietime.core.domain.showtime.Schedule;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.*;
 import com.ninjas.movietime.core.util.DateUtils;
+import com.ninjas.movietime.integration.helpers.RequestBuilder;
+import com.ninjas.movietime.integration.helpers.RestClientHelper;
+import com.ninjas.movietime.integration.uri.AlloCineURICreator;
+import com.ninjas.movietime.integration.uri.URICreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,14 +43,17 @@ public class AlloCineAPI {
 
     private final RestClientHelper restClient;
 
+    private final URICreator uriCreator;
+
     @Autowired
     public AlloCineAPI(RestClientHelper restClient) {
         this.restClient = restClient;
+        this.uriCreator = new AlloCineURICreator();
     }
 
     public List<Theater> findAllInParis() {
         final URI uri = RequestBuilder
-                .create("theaterlist")
+                .create(uriCreator, "theaterlist")
                 .add("zip", 75000) //paris
                 .add("count", 400)
                 .add("radius", 50)
@@ -72,7 +79,7 @@ public class AlloCineAPI {
 
         //build uri
         final URI uri = RequestBuilder
-                .create("showtimelist")
+                .create(uriCreator, "showtimelist")
                 .add("theaters", theatersCode)
                         //.add("movie", "code")
                         //.add("date", "YYYY-MM-DD")

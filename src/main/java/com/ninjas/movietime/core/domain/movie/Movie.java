@@ -16,13 +16,12 @@
 
 package com.ninjas.movietime.core.domain.movie;
 
+import com.ninjas.movietime.core.domain.Actor;
+import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import com.ninjas.movietime.core.util.DateUtils;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,6 +34,7 @@ import java.util.List;
  * @author ayassinov on 30/07/2014.
  */
 @Getter
+@Setter
 @ToString
 @TypeAlias("movie")
 @Document(collection = "movies")
@@ -42,45 +42,81 @@ import java.util.List;
 public class Movie {
 
     @Id
-    private final String id;
+    private String id;
 
-    private final String title;
+    private String imdbTitle;
 
-    private final Date releaseDate;
+    private String title;
 
-    private final int runtime;
+    private Date releaseDate;
 
-    private final Rating rating;
+    private int runtime;
 
-    private final List<Genre> genres;
+    private Rating rating;
 
-    private final List<String> directors;
+    private List<Genre> genres = new ArrayList<>();
 
-    private final List<String> actors;
+    private List<String> directorsName = new ArrayList<>();
+
+    private List<String> actorsName = new ArrayList<>();
+
+    private List<People> directors = new ArrayList<>();
+
+    private List<People> writers = new ArrayList<>();
+
+    private List<Actor> actors = new ArrayList<>();
+
+    private List<People> producers = new ArrayList<>();
+
+    private String imdbCode;
+
+    private String rottenTomatoesId;
+
+    private String theMovieDbCode;
+
+    private int year;
+
+    private String trailerUrl;
+
+    private String tagLine;
+
+    private String overview;
+
+    private String certification;
+
+    private String posterUrl;
+
+    private String fanArtUrl;
+
+    private Date updateDate;
+
+    private Date rottenUpdateDate;
+
+    private Date theMovieDbUpdateDate;
+
+    private Date traktDbUpdateDate;
 
     @Transient
     private List<Showtime> showtime = new ArrayList<>();
 
-    //private final int productionYear;
-
-    public Movie(String id) {
-        this(id, null, null, 0, null
-                , new ArrayList<Genre>()
-                , new ArrayList<String>()
-                , new ArrayList<String>());
+    public Movie() {
     }
 
-    @PersistenceConstructor
+    public Movie(String id) {
+        this.id = id;
+    }
+
     public Movie(String id, String title, Date releaseDate, int runtime,
-                 Rating rating, List<Genre> genres, List<String> directors, List<String> actors) {
+                 Rating rating, List<Genre> genres, List<String> directorsName, List<String> actorsName) {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;
         this.runtime = runtime;
         this.rating = rating;
         this.genres = genres;
-        this.directors = directors;
-        this.actors = actors;
+        this.directorsName = directorsName;
+        this.actorsName = actorsName;
+        this.updateDate = DateUtils.now();
     }
 
     @Data

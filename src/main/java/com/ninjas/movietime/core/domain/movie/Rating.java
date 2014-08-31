@@ -10,9 +10,15 @@ public class Rating {
 
     private double pressRating;
     private double userRating;
+
     private double imdbRating;
-    private double rottenRating;
+    private int imdbVoteCount;
+
+    private double rottenCriticsRating;
+    private double rottenUserRating;
+
     private double trackTvRating;
+    private double trackTvVoteCount;
 
     public Rating() {
     }

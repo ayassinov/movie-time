@@ -45,4 +45,8 @@ public final class DateUtils {
             return null;
         return DateTime.parse(date, DateTimeFormat.forPattern(format)).toDate();
     }
+
+    public static int getCurrentYear() {
+        return DateTime.now().getYear();
+    }
 }
