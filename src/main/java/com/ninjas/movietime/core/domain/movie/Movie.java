@@ -16,14 +16,18 @@
 
 package com.ninjas.movietime.core.domain.movie;
 
-import com.ninjas.movietime.core.domain.Actor;
 import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.util.DateUtils;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -44,37 +48,23 @@ public class Movie {
     @Id
     private String id;
 
+    private String imdbId;
+
+    private String rottenTomatoesId;
+
+    private String timdbId;
+
     private String imdbTitle;
 
     private String title;
 
+    @Indexed
+    private int year;
+
+    @Indexed
     private Date releaseDate;
 
     private int runtime;
-
-    private Rating rating;
-
-    private List<Genre> genres = new ArrayList<>();
-
-    private List<String> directorsName = new ArrayList<>();
-
-    private List<String> actorsName = new ArrayList<>();
-
-    private List<People> directors = new ArrayList<>();
-
-    private List<People> writers = new ArrayList<>();
-
-    private List<Actor> actors = new ArrayList<>();
-
-    private List<People> producers = new ArrayList<>();
-
-    private String imdbCode;
-
-    private String rottenTomatoesId;
-
-    private String theMovieDbCode;
-
-    private int year;
 
     private String trailerUrl;
 
@@ -88,45 +78,51 @@ public class Movie {
 
     private String fanArtUrl;
 
-    private Date updateDate;
+    private Rating rating;
 
-    private Date rottenUpdateDate;
+    private List<Genre> genres = new ArrayList<>();
 
-    private Date theMovieDbUpdateDate;
+    @DBRef
+    private List<People> directors = new ArrayList<>();
 
-    private Date traktDbUpdateDate;
+    @DBRef
+    private List<People> writers = new ArrayList<>();
+
+    @DBRef
+    private List<People> actors = new ArrayList<>();
+
+    @DBRef
+    private List<People> producers = new ArrayList<>();
+
+    @Indexed
+    private Date lastUpdate;
+
+    @Indexed
+    private Date rottenTomatoesLastUpdate;
+
+    @Indexed
+    private Date timdbLastUpdate;
+
+    @Indexed
+    private Date traktLastUpdate;
 
     @Transient
     private List<Showtime> showtime = new ArrayList<>();
 
     public Movie() {
+        this.lastUpdate = DateUtils.now();
     }
 
     public Movie(String id) {
         this.id = id;
     }
 
-    public Movie(String id, String title, Date releaseDate, int runtime,
-                 Rating rating, List<Genre> genres, List<String> directorsName, List<String> actorsName) {
+    public Movie(String id, String title, Date releaseDate, int runtime, Rating rating) {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;
         this.runtime = runtime;
         this.rating = rating;
-        this.genres = genres;
-        this.directorsName = directorsName;
-        this.actorsName = actorsName;
-        this.updateDate = DateUtils.now();
     }
 
-    @Data
-    public static class Genre {
-        private String code;
-        private String name;
-
-        public Genre(String code, String name) {
-            this.code = code;
-            this.name = name;
-        }
-    }
 }

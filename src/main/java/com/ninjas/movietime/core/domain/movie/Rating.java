@@ -9,7 +9,10 @@ import lombok.Data;
 public class Rating {
 
     private double pressRating;
+    private int pressVoteCount;
+
     private double userRating;
+    private int userVoteCount;
 
     private double imdbRating;
     private int imdbVoteCount;
@@ -23,8 +26,10 @@ public class Rating {
     public Rating() {
     }
 
-    public Rating(double pressRating, double userRating) {
+    public Rating(double pressRating, int pressVoteCount, double userRating, int userVoteCount) {
         this.pressRating = pressRating;
+        this.pressVoteCount = pressVoteCount;
         this.userRating = userRating;
+        this.userVoteCount = userVoteCount;
     }
 }

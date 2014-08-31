@@ -18,6 +18,8 @@ package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
+import com.ninjas.movietime.core.domain.People;
+import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.movie.Rating;
 import com.ninjas.movietime.core.domain.showtime.DateAndTime;
@@ -127,33 +129,38 @@ public class AlloCineAPI {
     private Movie createMovie(final JsonNode node) {
         final Rating rating = new Rating(
                 node.path("onShow").path("movie").path("statistics").path("pressRating").asDouble(),
-                node.path("onShow").path("movie").path("statistics").path("userRating").asDouble()
+                node.path("onShow").path("movie").path("statistics").path("pressReviewCount").asInt(),
+                node.path("onShow").path("movie").path("statistics").path("userRating").asDouble(),
+                node.path("onShow").path("movie").path("statistics").path("editorialRatingCount").asInt()
         );
 
-        final List<String> directors =
-                Arrays.asList(node.path("onShow").path("movie").path("castingShort").path("directors").asText().split(","));
+        final Movie movie = new Movie(
+                node.path("onShow").path("movie").path("code").asText(),
+                node.path("onShow").path("movie").path("title").asText(),
+                DateUtils.parse(node.path("onShow").path("movie").path("release").path("releaseDate").asText(), "yyyy-MM-dd"),
+                node.path("onShow").path("movie").path("runtime").asInt(),
+                rating
+        );
 
-        final List<String> actors =
-                Arrays.asList(node.path("onShow").path("movie").path("castingShort").path("actors").asText().split(","));
 
-        final List<Movie.Genre> genres = new ArrayList<>();
+        final String[] directorsNames = node.path("onShow").path("movie").path("castingShort").path("directors").asText().split(",");
+        for (String director : directorsNames) {
+            movie.getDirectors().add(new People(director.trim(), People.JobEnum.DIRECTOR, null));
+        }
+
+        final String[] actorNames = node.path("onShow").path("movie").path("castingShort").path("actors").asText().split(",");
+        for (String actor : actorNames) {
+            movie.getActors().add(new People(actor.trim(), People.JobEnum.ACTOR, null, null));
+        }
+
         for (JsonNode genreNode : node.path("onShow").path("movie").path("genre")) {
-            genres.add(new Movie.Genre(
+            movie.getGenres().add(new Genre(
                     genreNode.path("code").asText(),
                     genreNode.path("$").asText()
             ));
         }
 
-        return new Movie(
-                node.path("onShow").path("movie").path("code").asText(),
-                node.path("onShow").path("movie").path("title").asText(),
-                DateUtils.parse(node.path("onShow").path("movie").path("release").path("releaseDate").asText(), "yyyy-MM-dd"),
-                node.path("onShow").path("movie").path("runtime").asInt(),
-                rating,
-                genres,
-                directors,
-                actors
-        );
+        return movie;
     }
 
     private Collection<Showtime> createShowtime(final JsonNode node) {

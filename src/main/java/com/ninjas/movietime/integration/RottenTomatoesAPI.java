@@ -38,7 +38,7 @@ public class RottenTomatoesAPI {
             movie.setRottenTomatoesId(node.path("id").asText());
             movie.getRating().setRottenCriticsRating(node.path("ratings").path("critics_score").asDouble());
             movie.getRating().setRottenUserRating(node.path("ratings").path("audience_score").asDouble());
-            movie.setRottenUpdateDate(DateUtils.now());
+            movie.setRottenTomatoesLastUpdate(DateUtils.now());
         }
     }
 }

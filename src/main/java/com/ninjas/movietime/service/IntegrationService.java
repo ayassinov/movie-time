@@ -1,6 +1,8 @@
 package com.ninjas.movietime.service;
 
+import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.UpdateTracking;
+import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
@@ -65,6 +67,15 @@ public class IntegrationService {
 
                 //todo bulk save
                 for (Showtime showtime : showtimes) {
+                    for (People actor : showtime.getMovie().getActors())
+                        mongoTemplate.save(actor);
+
+                    for (People director : showtime.getMovie().getDirectors())
+                        mongoTemplate.save(director);
+
+                    for (Genre genre : showtime.getMovie().getGenres()) {
+                        mongoTemplate.save(genre);
+                    }
                     mongoTemplate.save(showtime.getMovie());
                     mongoTemplate.save(showtime);
                 }
@@ -73,10 +84,10 @@ public class IntegrationService {
     }
 
     public void updateImdbCode() {
-        final List<Movie> movies = mongoTemplate.find(Query.query(Criteria.where("theMovieDbUpdateDate").is(null)), Movie.class);
+        final List<Movie> movies = mongoTemplate.find(Query.query(Criteria.where("timdbLastUpdate").is(null)), Movie.class);
         for (final Movie movie : movies) {
             imdbAPI.updateMovieInformation(movie, movie.getTitle(), DateUtils.getCurrentYear());
-            if (movie.getTheMovieDbUpdateDate() != null) {
+            if (movie.getTimdbLastUpdate() != null) {
                 mongoTemplate.save(movie);
                 break;
             }
@@ -85,12 +96,12 @@ public class IntegrationService {
 
     public void updateRottenTomatoesCode() {
         final List<Movie> movies = mongoTemplate.find(
-                Query.query(Criteria.where("rottenUpdateDate").is(null).and("imdbCode").ne(null)),
+                Query.query(Criteria.where("rottenTomatoesLastUpdate").is(null).and("imdbId").ne(null)),
                 Movie.class
         );
         for (final Movie movie : movies) {
-            rottenTomatoesAPI.updateMovieInformation(movie, movie.getImdbCode());
-            if (movie.getRottenUpdateDate() != null) {
+            rottenTomatoesAPI.updateMovieInformation(movie, movie.getImdbId());
+            if (movie.getRottenTomatoesLastUpdate() != null) {
                 mongoTemplate.save(movie);
                 break;
             }
@@ -99,12 +110,24 @@ public class IntegrationService {
 
     public void updateTraktTvInformation() {
         final List<Movie> movies = mongoTemplate.find(
-                Query.query(Criteria.where("traktDbUpdateDate").is(null).and("theMovieDbCode").ne(null)),
+                Query.query(Criteria.where("traktLastUpdate").is(null).and("timdbId").ne(null)),
                 Movie.class
         );
         for (final Movie movie : movies) {
-            traktTvAPI.updateMovieInformation(movie, movie.getTheMovieDbCode());
-            if (movie.getTheMovieDbUpdateDate() != null) {
+            traktTvAPI.updateMovieInformation(movie, movie.getTimdbId());
+            if (movie.getTimdbLastUpdate() != null) {
+                for (People actor : movie.getActors())
+                    mongoTemplate.save(actor);
+
+                for (People director : movie.getDirectors())
+                    mongoTemplate.save(director);
+
+                for (People writer : movie.getWriters())
+                    mongoTemplate.save(writer);
+
+                for (People producer : movie.getProducers())
+                    mongoTemplate.save(producer);
+
                 mongoTemplate.save(movie);
                 break;
             }

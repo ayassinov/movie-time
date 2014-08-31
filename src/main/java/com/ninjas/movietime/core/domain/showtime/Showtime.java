@@ -19,9 +19,7 @@ package com.ninjas.movietime.core.domain.showtime;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.core.util.DateUtils;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.TypeAlias;
@@ -44,19 +42,20 @@ import java.util.List;
 public class Showtime {
 
     @Id
-    private final String id;
+    private String id;
 
     @DBRef
     @Indexed
-    private final Theater theater;
+    private Theater theater;
 
     @DBRef
     @Indexed
-    private final Movie movie;
+    private Movie movie;
 
-    private final Date lastUpdate;
+    private Date lastUpdate;
 
-    private final List<Schedule> schedules = new ArrayList<>();
+    @Setter(AccessLevel.NONE)
+    private List<Schedule> schedules = new ArrayList<>();
 
     public Showtime(String theaterId, String movieCode) {
         this(new Theater(theaterId), new Movie(movieCode));

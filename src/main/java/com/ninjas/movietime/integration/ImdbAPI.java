@@ -34,11 +34,11 @@ public class ImdbAPI {
         final JsonNode node = restClient.get(uri);
 
         if (node.path("total_results").asInt() > 0) {
-            movie.setTheMovieDbCode(node.path("results").get(0).path("id").asText());
+            movie.setTimdbId(node.path("results").get(0).path("id").asText());
             movie.setImdbTitle(node.path("results").get(0).path("title").asText()); //second Title
             movie.getRating().setImdbRating(node.path("results").get(0).path("vote_average").asDouble());
             movie.getRating().setImdbVoteCount(node.path("results").get(0).path("vote_count").asInt());
-            movie.setTheMovieDbUpdateDate(DateUtils.now());
+            movie.setTimdbLastUpdate(DateUtils.now());
         }
 
     }

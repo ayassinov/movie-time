@@ -16,6 +16,6 @@ public class ImdbAPITest extends BaseTest {
     public void testFindImdbCode() {
         final Movie movie = new Movie();
         imdbAPI.updateMovieInformation(movie, "le role de ma vie", 2014);
-        Assert.assertThat(movie.getImdbCode(), Matchers.notNullValue());
+        Assert.assertThat(movie.getImdbId(), Matchers.notNullValue());
     }
 }
