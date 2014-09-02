@@ -14,10 +14,6 @@ public class Schedule {
 
     private List<DateAndTime> dateAndTimes = new ArrayList<>();
 
-    // private LanguageEnum language;
-
-    //private ScreenFormatEnum screenFormat;
-
     private ScreenFormat screenFormat;
 
     private Language language;

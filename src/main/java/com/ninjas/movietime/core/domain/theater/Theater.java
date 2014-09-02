@@ -22,11 +22,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,54 +43,44 @@ import java.util.List;
 public class Theater {
 
     @Id
-    private final String id;
+    private String id;
 
     //@Indexed(name = "idx_name", unique = false)
-    private final String name;
+    private String name;
 
-    private final GeoLocation geoLocation;
+    private GeoLocation geoLocation;
 
-    private final Address address;
+    private Address address;
 
     @DBRef
-    private final TheaterChain theaterChain;
+    private TheaterChain theaterChain;
 
-    private final ShutDownStatus shutDownStatus;
+    private ShutDownStatus shutDownStatus;
 
-    private boolean isOpen;
-
-    private final Date lastUpdate;
+    private Date lastUpdate;
 
     @Transient
     private List<Showtime> showtime = new ArrayList<>();
 
+    public Theater() {
+    }
+
     public Theater(String id) {
-        this(id, null, null, null, null, null, false, null);
+        this.id = id;
     }
 
-    public Theater(String id, String name, GeoLocation geoLocation,
-                   Address address, TheaterChain theaterChain,
-                   ShutDownStatus shutDownStatus) {
-        this(id, name, geoLocation, address, theaterChain, shutDownStatus, false, DateUtils.now());
-        this.isOpen = checkIfTheaterIsOpen();
-    }
-
-    @PersistenceConstructor
-    public Theater(String id, String name, GeoLocation geoLocation,
-                   Address address, TheaterChain theaterChain,
-                   ShutDownStatus shutDownStatus, boolean isOpen, Date lastUpdate) {
+    public Theater(String id, String name, GeoLocation geoLocation, Address address,
+                   TheaterChain theaterChain, ShutDownStatus shutDownStatus) {
         this.id = id;
         this.name = name;
         this.geoLocation = geoLocation;
         this.address = address;
         this.theaterChain = theaterChain;
         this.shutDownStatus = shutDownStatus;
-        this.isOpen = isOpen;
-        this.lastUpdate = lastUpdate;
-
     }
 
-    private boolean checkIfTheaterIsOpen() {
+    @Field("isOpen")
+    public boolean isOpen() {
         return this.shutDownStatus == null || DateUtils.isBeforeNow(this.shutDownStatus.getDateEnd());
     }
 }

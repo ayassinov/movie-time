@@ -1,7 +1,7 @@
 package com.ninjas.movietime.service;
 
+import com.ninjas.movietime.core.domain.APICallLog;
 import com.ninjas.movietime.core.domain.People;
-import com.ninjas.movietime.core.domain.UpdateTracking;
 import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
@@ -12,8 +12,8 @@ import com.ninjas.movietime.integration.AlloCineAPI;
 import com.ninjas.movietime.integration.ImdbAPI;
 import com.ninjas.movietime.integration.RottenTomatoesAPI;
 import com.ninjas.movietime.integration.TraktTvAPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ninjas.movietime.repository.IntegrationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -25,11 +25,11 @@ import java.util.List;
 /**
  * @author ayassinov on 27/08/2014.
  */
+@Slf4j
 @Service
 public class IntegrationService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntegrationService.class);
-
+    private final IntegrationRepository integrationRepository;
     private final MongoTemplate mongoTemplate;
     private final AlloCineAPI alloCineAPI;
     private final ImdbAPI imdbAPI;
@@ -37,7 +37,12 @@ public class IntegrationService {
     private final TraktTvAPI traktTvAPI;
 
     @Autowired
-    public IntegrationService(MongoTemplate mongoTemplate, AlloCineAPI alloCineAPI, ImdbAPI imdbAPI, RottenTomatoesAPI rottenTomatoesAPI, TraktTvAPI traktTvAPI) {
+    public IntegrationService(IntegrationRepository integrationRepository, MongoTemplate mongoTemplate,
+                              AlloCineAPI alloCineAPI,
+                              ImdbAPI imdbAPI,
+                              RottenTomatoesAPI rottenTomatoesAPI,
+                              TraktTvAPI traktTvAPI) {
+        this.integrationRepository = integrationRepository;
         this.mongoTemplate = mongoTemplate;
         this.alloCineAPI = alloCineAPI;
         this.imdbAPI = imdbAPI;
@@ -45,40 +50,44 @@ public class IntegrationService {
         this.traktTvAPI = traktTvAPI;
     }
 
-    public void integrateTheaters() {
-        final List<Theater> allByRegion = alloCineAPI.findAllInParis();
-        for (final Theater theater : allByRegion) {
-            mongoTemplate.save(theater.getTheaterChain());
-            mongoTemplate.save(theater);
+    /**
+     * Add new/Update Theater and TheaterChain from AlloCineAPI
+     */
+    public void updateTheaters() {
+        try {
+            final List<Theater> allByRegion = alloCineAPI.findAllInParis();
+            integrationRepository.saveTheater(allByRegion);
+            integrationRepository.saveAPICallLog(APICallLog.success(APICallLog.OperationEnum.THEATER_UPDATE));
+        } catch (Exception ex) {
+            log.error("Exception On Updating Movie Theaters", ex);
+            integrationRepository.saveAPICallLog(APICallLog.fail(APICallLog.OperationEnum.THEATER_UPDATE));
         }
-        //track update
-        mongoTemplate.save(new UpdateTracking(UpdateTracking.OperationEnum.THEATER_UPDATE, true,
-                "DONE WITH SUCCESS"));
     }
 
-    public void updateShowtime() {
-        //find official theaterChain
-        final List<TheaterChain> theaterChains = listAllTheaterChain(true);
+    public void updateShowtime(boolean isTrackedOnly) {
+        //find theater Chain
+        final List<TheaterChain> theaterChains = integrationRepository.listAllTheaterChain(isTrackedOnly);
         //iterate over every chain to get the theaters list
         for (final TheaterChain theaterChain : theaterChains) {
-            if (theaterChain.getId().equalsIgnoreCase("81001")) {
-                final List<Theater> theaters = listOpenTheaterByTheaterChain(theaterChain);
-                final List<Showtime> showtimes = alloCineAPI.findShowtime(theaters);
+            //list all theaters
+            final List<Theater> theaters = integrationRepository.listOpenTheaterByTheaterChain(theaterChain, true);
 
-                //todo bulk save
-                for (Showtime showtime : showtimes) {
-                    for (People actor : showtime.getMovie().getActors())
-                        mongoTemplate.save(actor);
+            final List<Showtime> showtimes = alloCineAPI.findShowtime(theaters);
 
-                    for (People director : showtime.getMovie().getDirectors())
-                        mongoTemplate.save(director);
+            //todo bulk save
+            for (Showtime showtime : showtimes) {
+                for (People actor : showtime.getMovie().getActors())
+                    mongoTemplate.save(actor);
 
-                    for (Genre genre : showtime.getMovie().getGenres()) {
-                        mongoTemplate.save(genre);
-                    }
-                    mongoTemplate.save(showtime.getMovie());
-                    mongoTemplate.save(showtime);
+                for (People director : showtime.getMovie().getDirectors())
+                    mongoTemplate.save(director);
+
+                for (Genre genre : showtime.getMovie().getGenres()) {
+                    mongoTemplate.save(genre);
                 }
+
+                mongoTemplate.save(showtime.getMovie());
+                mongoTemplate.save(showtime);
             }
         }
     }
@@ -134,28 +143,13 @@ public class IntegrationService {
         }
     }
 
-    private List<TheaterChain> listAllTheaterChain(boolean isOnlyTracked) {
-        final List<TheaterChain> theaterChains;
-        if (isOnlyTracked) {
-            final Query theaterChainQuery = Query.query(Criteria.where("isTracked").is(true));
-            theaterChains = mongoTemplate.find(theaterChainQuery, TheaterChain.class);
-        } else {
-            theaterChains = mongoTemplate.findAll(TheaterChain.class);
-        }
-        return theaterChains;
-    }
 
-    private List<Theater> listOpenTheaterByTheaterChain(TheaterChain theaterChain) {
-        final Query theaterQuery = Query.query(Criteria.where("theaterChain").is(theaterChain).and("isOpen").is(true));
-        return mongoTemplate.find(theaterQuery, Theater.class);
-    }
-
-   /* public void updateMovies() {
+    public void updateMovies() {
 
     }
 
     public void integrateUpComingMovies() {
 
-    }*/
+    }
 
 }

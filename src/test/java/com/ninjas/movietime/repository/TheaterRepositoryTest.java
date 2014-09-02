@@ -17,28 +17,12 @@
 package com.ninjas.movietime.repository;
 
 import com.ninjas.movietime.BaseTest;
-import com.ninjas.movietime.core.domain.theater.Theater;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 
 /**
  * @author ayassinov on 16/07/14
  */
+@Ignore
 public class TheaterRepositoryTest extends BaseTest {
-
-    @Autowired
-    private TheaterRepository theaterRepository;
-
-    @Test
-    @Ignore
-    public void test() {
-        final List<Theater> theaters = theaterRepository.findAll();
-        Assert.assertThat(theaters.size(), Matchers.greaterThan(0));
-    }
 }

@@ -14,28 +14,28 @@ import java.util.Date;
  */
 
 @Data
-@TypeAlias("updateTracking")
-@Document(collection = "updatesTracking")
+@TypeAlias("apiCallLog")
+@Document(collection = "apiCallLog")
 @EqualsAndHashCode(of = "id")
-public class UpdateTracking {
+public class APICallLog {
 
     @Id
     private int id;
 
     private OperationEnum operation;
 
-    private Date updateDate;
+    private Date callDate;
 
     private boolean status;
 
     private String message;
 
-    public UpdateTracking() {
+    public APICallLog() {
     }
 
-    public UpdateTracking(OperationEnum operation, boolean status, String message) {
+    public APICallLog(OperationEnum operation, boolean status, String message) {
         this.operation = operation;
-        this.updateDate = DateUtils.now();
+        this.callDate = DateUtils.now();
         this.status = status;
         this.message = message;
     }
@@ -43,4 +43,13 @@ public class UpdateTracking {
     public enum OperationEnum {
         THEATER_UPDATE, SHOWTIME_UPDATE, MOVIE_RATING_UPDATE, MOVIE_INFORMATION_UPDATE
     }
+
+    public static APICallLog fail(OperationEnum operation) {
+        return new APICallLog(operation, false, null);
+    }
+
+    public static APICallLog success(OperationEnum operation) {
+        return new APICallLog(operation, true, null);
+    }
+
 }

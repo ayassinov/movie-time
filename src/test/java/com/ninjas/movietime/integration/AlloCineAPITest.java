@@ -18,20 +18,10 @@ package com.ninjas.movietime.integration;
 
 import com.ninjas.movietime.BaseTest;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author ayassinov on 17/07/14
  */
-
+@Ignore
 public class AlloCineAPITest extends BaseTest {
-
-    @Autowired
-    private AlloCineAPI alloCineAPI;
-
-    @Test
-    @Ignore
-    public void testFindAllInParis() {
-    }
 }

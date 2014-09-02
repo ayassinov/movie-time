@@ -27,7 +27,7 @@ import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 /**
  * @author ayassinov on 16/07/14
  */
-public class GeoLocationTest extends BaseTest{
+public class GeoLocationTest extends BaseTest {
 
     @Test
     public void testEquals() {

@@ -46,23 +46,34 @@ public class TheaterChain {
             .asList();
 
     @Id
-    private final String id;
+    private String id;
 
     @Indexed
-    private final String name;
+    private String name;
 
-    private final boolean isTracked;
+    private boolean isTracked;
 
-    private final Date lastUpdate;
+    private Date lastUpdate;
 
     @Setter
     @Transient
     private List<Theater> theaters;
 
+    public TheaterChain() {
+    }
+
+    public TheaterChain(String id) {
+        this.id = id;
+    }
+
     public TheaterChain(String id, String name) {
         this.id = id;
         this.name = name;
         this.lastUpdate = DateUtils.now();
-        this.isTracked = OFFICIAL_THEATER_CHAIN.contains(id);
+        this.isTracked = isTracked();
+    }
+
+    public boolean isTracked() {
+        return OFFICIAL_THEATER_CHAIN.contains(this.id);
     }
 }
