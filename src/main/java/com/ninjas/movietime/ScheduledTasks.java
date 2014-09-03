@@ -20,6 +20,7 @@ import com.ninjas.movietime.service.IntegrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,9 +31,6 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class ScheduledTasks {
 
-    private final static String CRON_EVERY_WED_SUN_AT_23 = "* 23 * * 3,0 * ";
-    private final static String CRON_EVERY_SAT_AT_23 = "* 23 * * 1 * ";
-
     private final IntegrationService integrationService;
 
     @Autowired
@@ -40,16 +38,16 @@ public class ScheduledTasks {
         this.integrationService = integrationService;
     }
 
-    // @Scheduled(cron = CRON_EVERY_WED_SUN_AT_23)
+    @Scheduled(cron = "${movietime.app.cron.showtime}")
     public void updateMoviesShowtime() {
         logTaskCall("updateMovieShowtime");
-        integrationService.updateShowtime(true);
+        //integrationService.updateShowtime(true);
     }
 
-    //@Scheduled(cron = CRON_EVERY_SAT_AT_23)
+    @Scheduled(cron = "${movietime.app.cron.theater}")
     public void updateTheaters() {
         logTaskCall("updateTheaters");
-        integrationService.updateTheaters();
+        //integrationService.updateTheaters();
     }
 
     private void logTaskCall(String taskName) {

@@ -16,7 +16,6 @@
 
 package com.ninjas.movietime.core.util;
 
-import com.ninjas.movietime.BaseTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +23,7 @@ import org.junit.Test;
 /**
  * @author ayassinov on 17/07/14
  */
-public class StringsUtilsTest extends BaseTest {
+public class StringsUtilsTest {
 
     @Test
     public void encodeTest() {

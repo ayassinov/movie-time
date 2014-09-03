@@ -16,7 +16,6 @@
 
 package com.ninjas.movietime.core.domain;
 
-import com.ninjas.movietime.BaseTest;
 import com.ninjas.movietime.core.domain.theater.GeoLocation;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import org.junit.Test;
@@ -28,7 +27,7 @@ import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 /**
  * @author ayassinov on 16/07/14
  */
-public class TheaterTest extends BaseTest {
+public class TheaterTest {
 
 
     @Test
