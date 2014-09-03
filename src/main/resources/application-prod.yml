@@ -3,7 +3,7 @@ movietime:
     mode: PROD
     esUrl: https://bf4bay8g:21p8huoxv8kc13y4@apple-5840.eu-west-1.bonsai.io:443/
   mongo:
-    url: mongodb://heroku:5cfc057727158f803cf7aed61c6422d0@lennon.mongohq.com:10023/app27658792
+    url: mongodb://heroku_app27658792:xxxx@ds033170.mongolab.com:33170/heroku_app27658792
     writeResultChecking: EXCEPTION
   graphite:
     activate: true
