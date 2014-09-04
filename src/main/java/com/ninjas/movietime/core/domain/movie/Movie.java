@@ -80,6 +80,12 @@ public class Movie {
 
     private Rating rating;
 
+    private List<Nationality> nationality = new ArrayList<>();
+
+    @DBRef
+    private MovieType movieType;
+
+    @DBRef
     private List<Genre> genres = new ArrayList<>();
 
     @DBRef
@@ -108,6 +114,7 @@ public class Movie {
 
     @Transient
     private List<Showtime> showtime = new ArrayList<>();
+    private String synopsis;
 
     public Movie() {
         this.lastUpdate = DateUtils.now();
@@ -124,5 +131,4 @@ public class Movie {
         this.runtime = runtime;
         this.rating = rating;
     }
-
 }

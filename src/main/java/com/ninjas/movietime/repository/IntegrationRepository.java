@@ -3,6 +3,7 @@ package com.ninjas.movietime.repository;
 import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.APICallLog;
 import com.ninjas.movietime.core.domain.People;
+import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
@@ -64,6 +65,10 @@ public class IntegrationRepository {
             for (People producer : movie.getProducers())
                 mongoTemplate.save(producer);
 
+            for (Genre genre : movie.getGenres())
+                mongoTemplate.save(genre);
+
+            mongoTemplate.save(movie.getMovieType());
             mongoTemplate.save(movie);
         } catch (Exception ex) {
             ExceptionManager.log(ex, "Error on saving Movie title %s to mongodb", movie.getTitle());

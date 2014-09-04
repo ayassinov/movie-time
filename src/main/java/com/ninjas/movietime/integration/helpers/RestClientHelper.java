@@ -27,14 +27,11 @@ public class RestClientHelper {
 
     private final ObjectMapper objectMapper;
 
-    private final String className = this.getClass().getCanonicalName();
-
     @Autowired
     public RestClientHelper(@NonNull RestTemplate restTemplate, @NonNull ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
-
 
     public <T> T get(@NonNull final URI uri, Class<T> clazz) {
         final Optional<Timer.Context> timer = MetricManager.startTimer("get", uri.getPath());
