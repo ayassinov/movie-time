@@ -4,9 +4,9 @@ movietime:
     version: ${pom.version}
     bugSnag: 16f3943bcff62960d25dcf14053efb98
     cron:
-      showtime: '* 23 * * 3,0 *'
-      theater: '* 23 * * 1 *'
-      upcomingMovies: '* 23 * * 2,3 *'
+      showtime: '0 0 23 * * WED,SUN'
+      theater: '0 0 20 * * WED'
+#      upcomingMovies: '* 23 * * 2,3'
   mongo:
     url: mongodb://localhost/hellocinedb
     writeResultChecking: EXCEPTION   #NONE, LOG, EXCEPTION
