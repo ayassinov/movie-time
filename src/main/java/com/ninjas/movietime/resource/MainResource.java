@@ -16,32 +16,47 @@
 
 package com.ninjas.movietime.resource;
 
-import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ninjas.movietime.MovieTimeConfig;
+import com.ninjas.movietime.core.util.MetricManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.codahale.metrics.MetricRegistry.name;
-
 /**
  * @author ayassinov on 11/07/14
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping(produces = "application/json;utf-8")
 public class MainResource {
 
-    private final MetricRegistry metrics;
+    private final ObjectMapper mapper;
+    private final MovieTimeConfig config;
 
     @Autowired
-    public MainResource(MetricRegistry metrics) {
-        this.metrics = metrics;
+    public MainResource(ObjectMapper mapper, MovieTimeConfig config) {
+        this.mapper = mapper;
+        this.config = config;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String main() {
-        metrics.meter(name("meter", "MainResource", "main", "request")).mark();
-        return "YO ! MAN!";
+    @RequestMapping(value = {"/", "/api"}, method = RequestMethod.GET)
+    public String main() throws Exception {
+        MetricManager.markResourceMeter("root");
+        final ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("name", "Movie Time");
+        objectNode.put("version", config.getApp().getVersion());
+        objectNode.put("api", String.format("/api/%s", config.getApp().getApiVersion()));
+        return objectNode.toString();
+    }
+
+    @RequestMapping(value = "/api/${movietime.app.apiVersion}")
+    public String apiDocumentation() {
+        //TODO list of apis
+        final ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("version", config.getApp().getApiVersion());
+        return mapper.createObjectNode().set("api", objectNode).toString();
     }
 
     /**
@@ -49,6 +64,7 @@ public class MainResource {
      */
     @RequestMapping(method = RequestMethod.HEAD)
     public String ping() {
+        MetricManager.markResourceMeter("ping");
         return "pong";
     }
 }

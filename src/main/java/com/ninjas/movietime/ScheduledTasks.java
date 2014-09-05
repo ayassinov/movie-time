@@ -16,10 +16,10 @@
 
 package com.ninjas.movietime;
 
+import com.ninjas.movietime.core.util.DateUtils;
 import com.ninjas.movietime.service.IntegrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@Profile("prod")
+//@Profile("prod")
 @EnableScheduling
 public class ScheduledTasks {
 
@@ -53,6 +53,6 @@ public class ScheduledTasks {
     }
 
     private void logTaskCall(String taskName) {
-        log.info("Calling task {}", taskName);
+        log.info("Executing Scheduled task={} at={}", taskName, DateUtils.now());
     }
 }

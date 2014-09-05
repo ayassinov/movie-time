@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,8 +51,8 @@ public class WebConfig {
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
-        factory.addErrorPages(new ErrorPage(org.springframework.http.HttpStatus.NOT_FOUND, "/index.html"),
-                new ErrorPage(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "/index.html"));
+        //factory.addErrorPages(new ErrorPage(org.springframework.http.HttpStatus.NOT_FOUND, "/index.html"),
+        //        new ErrorPage(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "/index.html"));
         return factory;
     }
 

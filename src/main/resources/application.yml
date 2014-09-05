@@ -2,11 +2,17 @@ movietime:
   app:
     mode: DEV
     version: ${pom.version}
+    apiVersion: v1
+    responseFormat: application/json;utf-8
     bugSnag: 16f3943bcff62960d25dcf14053efb98
     cron:
+      names:
+        - 'showtime'
+        - 'theater'
+        - 'upcomingMovies'
       showtime: '0 0 23 * * WED,SUN'
       theater: '0 0 20 * * WED'
-#      upcomingMovies: '* 23 * * 2,3'
+      upcomingMovies: '0 0 22 * * SUN'
   mongo:
     url: mongodb://localhost/hellocinedb
     writeResultChecking: EXCEPTION   #NONE, LOG, EXCEPTION
@@ -20,29 +26,31 @@ movietime:
     connectTimeout: 5000
     activateMetrics: true
     userAgent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5
-#endpoints:
-#  beans:
-#    id: beans
-#    sensitive: true
-#    enabled: true
-#  jolokia:
-#    enabled: true
-#info:
-#  build:
-#   artifact: ${project.artifactId}
-#    name: ${project.name}
-#    description: ${project.description}
-#    version: ${project.version}
+
+error:
+  whitelabel:
+    enabled: false
+health:
+  mongodb:
+    enabled: false
+management:
+  #port: -1 #ucomment to disable
+  context-path: /manage
+  security:
+    role: MANAGER
+info:
+  build:
+   artifact: ${project.artifactId}
+   name: ${project.name}
+   description: ${project.description}
+   version: ${project.version}
+endpoints:
+  info:
+    sensitive: true
+  health:
+    sensitive: true
 #security:
 #  user:
 #    name: super
 #    password: secret
 #    role: SUPERUSER
-management:
-  context-path: /manage
-  #security:
-  #  role: SUPERUSER
-
-jolokia:
-  config:
-    debug: true

@@ -17,8 +17,8 @@
 
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <!--<logger name="org.springframework" level="ERROR"/>-->
-    <logger name="org.springframework.data.mongodb.*" level="DEBUG"/>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.eclipse" level="ERROR"/>
     <logger name="com.ninjas.movietime.conf.vendor.metrics" level="INFO"/>
     <logger name="com.ninjas.movietime" level="DEBUG"/>
 </configuration>

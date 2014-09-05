@@ -2,7 +2,7 @@ package com.ninjas.movietime.service;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.ninjas.movietime.core.domain.APICallLog;
+import com.ninjas.movietime.core.domain.api.APICallLog;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;

@@ -1,7 +1,7 @@
 package com.ninjas.movietime.repository;
 
 import com.google.common.base.Preconditions;
-import com.ninjas.movietime.core.domain.APICallLog;
+import com.ninjas.movietime.core.domain.api.APICallLog;
 import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;

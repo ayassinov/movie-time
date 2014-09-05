@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author ayassinov on 18/07/14
@@ -75,6 +76,20 @@ public class MovieTimeConfig {
                     throw new EnumConstantNotPresentException(RunModeEnum.class, this.name());
             }
         }
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class Cron {
+
+        @NotEmpty(message = "Showtime udpate cron scheduling cannot be empty")
+        private String showtime;
+
+        @NotEmpty(message = "Theater update cron scheduling cannot be empty")
+        private String theater;
+
+        private List<String> names;
     }
 
 
@@ -159,7 +174,15 @@ public class MovieTimeConfig {
         @NotNull(message = "Version cannot be null or empty")
         private String version;
 
+        @NotNull(message = "API Version cannot be null or empty")
+        private String apiVersion;
+
+        @NotNull(message = "ResponseFormat cannot be null or empty")
+        private String responseFormat;
+
         private String bugSnag = null;
+
+        private Cron cron = null;
 
         private String esUrl = null;
 

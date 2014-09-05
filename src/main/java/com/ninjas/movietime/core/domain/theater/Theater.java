@@ -81,6 +81,6 @@ public class Theater {
 
     @Field("isOpen")
     public boolean isOpen() {
-        return this.shutDownStatus == null || DateUtils.isBeforeNow(this.shutDownStatus.getDateEnd());
+        return this.shutDownStatus == null || DateUtils.isDateBeforeNow(this.shutDownStatus.getDateEnd());
     }
 }

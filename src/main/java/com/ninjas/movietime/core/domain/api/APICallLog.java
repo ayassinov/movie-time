@@ -1,4 +1,4 @@
-package com.ninjas.movietime.core.domain;
+package com.ninjas.movietime.core.domain.api;
 
 import com.ninjas.movietime.core.util.DateUtils;
 import lombok.Data;
