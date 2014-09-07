@@ -2,7 +2,6 @@ package com.ninjas.movietime.service;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.ninjas.movietime.core.domain.api.APICallLog;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
@@ -17,7 +16,6 @@ import com.ninjas.movietime.integration.TraktTvAPI;
 import com.ninjas.movietime.repository.IntegrationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,20 +30,18 @@ public class IntegrationService {
     private final String className = this.getClass().getCanonicalName();
 
     private final IntegrationRepository integrationRepository;
-    private final MongoTemplate mongoTemplate;
     private final AlloCineAPI alloCineAPI;
     private final ImdbAPI imdbAPI;
     private final RottenTomatoesAPI rottenTomatoesAPI;
     private final TraktTvAPI traktTvAPI;
 
     @Autowired
-    public IntegrationService(IntegrationRepository integrationRepository, MongoTemplate mongoTemplate,
+    public IntegrationService(IntegrationRepository integrationRepository,
                               AlloCineAPI alloCineAPI,
                               ImdbAPI imdbAPI,
                               RottenTomatoesAPI rottenTomatoesAPI,
                               TraktTvAPI traktTvAPI) {
         this.integrationRepository = integrationRepository;
-        this.mongoTemplate = mongoTemplate;
         this.alloCineAPI = alloCineAPI;
         this.imdbAPI = imdbAPI;
         this.rottenTomatoesAPI = rottenTomatoesAPI;
@@ -55,16 +51,17 @@ public class IntegrationService {
     /**
      * Add new/Update Theater and TheaterChain from AlloCineAPI
      */
-    public void updateTheaters() {
+    public boolean updateTheaters() {
+
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateTheaters");
         try {
             final List<Theater> allByRegion = alloCineAPI.findAllInParis();
             integrationRepository.saveTheater(allByRegion);
-            integrationRepository.saveAPICallLog(APICallLog.success(APICallLog.OperationEnum.THEATER_UPDATE));
             log.debug("List of all theaters in paris {} updated", allByRegion.size());
+            return true;
         } catch (Exception ex) {
             ExceptionManager.log(ex, "Exception On Updating Movie Theaters");
-            integrationRepository.saveAPICallLog(APICallLog.fail(APICallLog.OperationEnum.THEATER_UPDATE));
+            return false;
         } finally {
             MetricManager.stopTimer(timer);
         }
@@ -77,11 +74,12 @@ public class IntegrationService {
      * @param isTrackedOnly if true the api will restrict the showtime
      *                      to only those how are official see TheaterChain class for the complete list
      */
-    public void updateMovieShowtime(boolean isTrackedOnly) {
+    public boolean updateMovieShowtime(boolean isTrackedOnly) {
         updateShowtime(isTrackedOnly);
         updateImdbId();
         updateTraktTvInformation();
         updateRottenTomatoesInformation();
+        return true;
     }
 
 
@@ -119,7 +117,7 @@ public class IntegrationService {
             final List<Movie> movies = integrationRepository.listMovieWithoutTimdbId();
             for (final Movie movie : movies) {
                 if (imdbAPI.updateMovieInformation(movie, DateUtils.getCurrentYear()))
-                    mongoTemplate.save(movie);
+                    integrationRepository.saveMovie(movie);
             }
         } finally {
             MetricManager.stopTimer(timer);
@@ -135,7 +133,7 @@ public class IntegrationService {
             final List<Movie> movies = integrationRepository.listMovieWithoutRottenTomatoesRating();
             for (final Movie movie : movies) {
                 if (rottenTomatoesAPI.updateMovieInformation(movie)) {
-                    mongoTemplate.save(movie);
+                    integrationRepository.saveMovie(movie);
                 }
             }
         } finally {
@@ -160,4 +158,7 @@ public class IntegrationService {
         }
     }
 
+    public boolean updateComingSoonMovie() {
+        return true;
+    }
 }

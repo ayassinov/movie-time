@@ -16,6 +16,7 @@
 
 package com.ninjas.movietime;
 
+import com.ninjas.movietime.core.domain.api.TaskEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -81,15 +82,26 @@ public class MovieTimeConfig {
     @Getter
     @Setter
     @ToString
-    public static class Cron {
+    public static class CronTask {
 
-        @NotEmpty(message = "Showtime udpate cron scheduling cannot be empty")
-        private String showtime;
+        @NotEmpty(message = "Name of the cron task cannot be empty")
+        private TaskEnum name;
 
-        @NotEmpty(message = "Theater update cron scheduling cannot be empty")
-        private String theater;
+        @NotEmpty(message = "Cron expression cannot be empty")
+        private String cron;
+    }
 
-        private List<String> names;
+    @Getter
+    @Setter
+    @ToString
+    public static class TaskPool {
+
+        private int corePoolSize;
+
+        private int maxPoolSize;
+
+        private int queueCapacity;
+
     }
 
 
@@ -182,7 +194,9 @@ public class MovieTimeConfig {
 
         private String bugSnag = null;
 
-        private Cron cron = null;
+        private TaskPool taskPool;
+
+        private List<CronTask> tasks;
 
         private String esUrl = null;
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.google.common.base.Preconditions;
 import com.ninjas.movietime.MovieTimeConfig;
 import com.ninjas.movietime.conf.vendor.jackson.FuzzyEnumModule;
 import com.ninjas.movietime.conf.vendor.jackson.GuavaExtrasModule;
@@ -28,8 +29,12 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +52,25 @@ public class WebConfig {
     private MetricRegistry metricRegistry;
 
     private ObjectMapper objectMapper;
+
+
+    @Bean
+    public TaskExecutor createTaskExecutor() {
+        final MovieTimeConfig.TaskPool taskPoolConfig = config.getApp().getTaskPool();
+        Preconditions.checkNotNull(taskPoolConfig, "Task pool configuration cannot be null");
+        final ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(taskPoolConfig.getCorePoolSize());
+        threadPoolTaskExecutor.setMaxPoolSize(taskPoolConfig.getMaxPoolSize());
+        threadPoolTaskExecutor.setQueueCapacity(taskPoolConfig.getQueueCapacity());
+        return threadPoolTaskExecutor;
+    }
+
+    @Bean
+    public TaskScheduler creTaskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(5);
+        return taskScheduler;
+    }
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {

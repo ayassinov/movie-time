@@ -16,7 +16,6 @@
 
 package com.ninjas.movietime;
 
-import com.ninjas.movietime.core.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -24,6 +23,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * @author ayassinov on 11/07/14
@@ -37,15 +38,19 @@ public class MovieTimeApplication implements CommandLineRunner {
     @Autowired
     private MovieTimeConfig config;
 
+    @Autowired
+    private ScheduledTasks scheduledTasks;
+
     public static void main(String[] args) throws Exception {
         SpringApplication.run(MovieTimeApplication.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
-        final MovieTimeConfig.Cron cron = config.getApp().getCron();
-        log.info("Next Executing Scheduled task={} at={}", "SHOWTIME", DateUtils.nextCronStartDate(cron.getShowtime()));
-        log.info("Next Executing Scheduled task={} at={}", "THEATER", DateUtils.nextCronStartDate(cron.getTheater()));
+        if (config.getApp().getMode().equals(MovieTimeConfig.RunModeEnum.PROD)) {
+            final List<MovieTimeConfig.CronTask> cronTasks = config.getApp().getTasks();
+            scheduledTasks.scheduleTasks(cronTasks);
+        }
     }
 }
 

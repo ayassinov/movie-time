@@ -5,14 +5,26 @@ movietime:
     apiVersion: v1
     responseFormat: application/json;utf-8
     bugSnag: 16f3943bcff62960d25dcf14053efb98
-    cron:
-      names:
-        - 'showtime'
-        - 'theater'
-        - 'upcomingMovies'
-      showtime: '0 0 23 * * WED,SUN'
-      theater: '0 0 20 * * WED'
-      upcomingMovies: '0 0 22 * * SUN'
+    taskPool:
+      corePoolSize: 5
+      maxPoolSize: 10
+      queueCapacity: 25
+    tasks: #See TaskEnum
+      - 
+        name: THEATER_UPDATE
+        cron: '0 0 20 * * WED'
+      -
+        name: SHOWTIME_UPDATE
+        cron: '0 0 23 * * WED,SUN'
+      -
+        name: MOVIE_COMING_SOON
+        cron: '0 0 22 * * SUN'
+      -
+        name: MOVIE_RATING_UPDATE
+        cron: '0 0 22 * * SUN'
+      -
+        name: MOVIE_INFORMATION_UPDATE
+        cron: '0 0 22 * * SUN'
   mongo:
     url: mongodb://localhost/hellocinedb
     writeResultChecking: EXCEPTION   #NONE, LOG, EXCEPTION

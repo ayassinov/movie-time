@@ -1,7 +1,6 @@
 package com.ninjas.movietime.repository;
 
 import com.google.common.base.Preconditions;
-import com.ninjas.movietime.core.domain.api.APICallLog;
 import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.movie.Genre;
 import com.ninjas.movietime.core.domain.movie.Movie;
@@ -86,15 +85,6 @@ public class IntegrationRepository {
         } catch (Exception ex) {
             ExceptionManager.log(ex, "Error on saving Showtime for theater %s and movie %s to mongodb",
                     showtime.getTheater().getId(), showtime.getMovie().getId());
-        }
-    }
-
-    public void saveAPICallLog(APICallLog apiCallLog) {
-        Preconditions.checkNotNull(apiCallLog, "API Call log to save cannot be null");
-        try {
-            mongoTemplate.save(apiCallLog);
-        } catch (Exception ex) {
-            ExceptionManager.log(ex, "Error on saving API Call log for %s to mongo", apiCallLog.getOperation().name());
         }
     }
 
