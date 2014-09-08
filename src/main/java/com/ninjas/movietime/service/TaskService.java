@@ -1,11 +1,13 @@
 package com.ninjas.movietime.service;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.api.Task;
 import com.ninjas.movietime.core.util.DateUtils;
 import com.ninjas.movietime.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,17 +36,24 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Task getByName(String taskName) {
-        return taskRepository.findById(taskName);
+    public Optional<Task> getByName(String taskName) {
+        return Optional.fromNullable(taskRepository.findById(taskName));
+    }
+
+    @Async
+    public void run(final String taskName) {
+        Runnable runnable = runnableTask(taskName);
+        runnable.run();
     }
 
 
     public Runnable runnableTask(final String taskName) {
         Preconditions.checkNotNull(taskName, "Task name cannot be null");
-        return runnableTask(getByName(taskName));
+        return runnableTask(getByName(taskName).orNull());
     }
 
     public Runnable runnableTask(final Task task) {
+        Preconditions.checkNotNull(task, "Task cannot be null. A task name is not valid");
         return new Runnable() {
             @Override
             public void run() {
@@ -66,13 +75,13 @@ public class TaskService {
                     default:
                         return;
                 }
-                saveTaskExecutionHistory(task, isSucceed, "");
+                saveTaskExecutionHistory(task, isSucceed);
             }
         };
     }
 
-    private void saveTaskExecutionHistory(final Task task, boolean isSucceed, String message) {
-        task.addExecutionHistory(isSucceed, message);
+    private void saveTaskExecutionHistory(final Task task, boolean isSucceed) {
+        task.addExecutionHistory(isSucceed);
         task.setLastExecutionDate(DateUtils.now());
         task.setNextExecutionDate(DateUtils.nextCronStartDate(task.getCron()));
         save(task);

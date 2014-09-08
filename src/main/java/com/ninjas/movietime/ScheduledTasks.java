@@ -51,10 +51,6 @@ public class ScheduledTasks {
         }
     }
 
-    public void executeTask(final String task) {
-        //taskExecutor.execute(taskService.runnableTask(task));
-    }
-
     private Task setupTask(final MovieTimeConfig.CronTask cronTask) {
         final Task task = new Task(cronTask.getName(), cronTask.getCron());
         return taskService.save(task);

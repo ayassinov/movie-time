@@ -1,6 +1,7 @@
 movietime:
   app:
     mode: DEV
+    name: ${pom.name}
     version: ${pom.version}
     apiVersion: v1
     responseFormat: application/json;utf-8

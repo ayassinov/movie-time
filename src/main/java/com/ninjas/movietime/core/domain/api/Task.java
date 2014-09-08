@@ -9,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author ayassinov on 07/09/14.
@@ -33,10 +32,8 @@ public class Task {
         this.nextExecutionDate = DateUtils.nextCronStartDate(this.cron);
     }
 
-    public String addExecutionHistory(boolean isSucceed, String message) {
-        final String uid = UUID.randomUUID().toString();
-        histories.add(new TaskExecutionHistory(isSucceed, uid, message, DateUtils.now()));
-        return uid;
+    public void addExecutionHistory(boolean isSucceed) {
+        histories.add(new TaskExecutionHistory(isSucceed, DateUtils.now()));
     }
 
 }

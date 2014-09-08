@@ -13,14 +13,10 @@ import java.util.Date;
 public class TaskExecutionHistory {
 
     private boolean isSucceed;
-    private String uid;
-    private String message;
     private Date executionDate;
 
-    public TaskExecutionHistory(boolean isSucceed, String uid, String message, Date executionDate) {
+    public TaskExecutionHistory(boolean isSucceed, Date executionDate) {
         this.isSucceed = isSucceed;
-        this.uid = uid;
-        this.message = message;
         this.executionDate = executionDate;
     }
 }

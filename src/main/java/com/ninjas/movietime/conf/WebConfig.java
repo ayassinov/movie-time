@@ -29,11 +29,9 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,31 +51,18 @@ public class WebConfig {
 
     private ObjectMapper objectMapper;
 
-
-    @Bean
-    public TaskExecutor createTaskExecutor() {
-        final MovieTimeConfig.TaskPool taskPoolConfig = config.getApp().getTaskPool();
-        Preconditions.checkNotNull(taskPoolConfig, "Task pool configuration cannot be null");
-        final ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(taskPoolConfig.getCorePoolSize());
-        threadPoolTaskExecutor.setMaxPoolSize(taskPoolConfig.getMaxPoolSize());
-        threadPoolTaskExecutor.setQueueCapacity(taskPoolConfig.getQueueCapacity());
-        return threadPoolTaskExecutor;
-    }
-
     @Bean
     public TaskScheduler creTaskScheduler() {
+        final MovieTimeConfig.TaskPool taskPoolConfig = config.getApp().getTaskPool();
+        Preconditions.checkNotNull(taskPoolConfig, "Task pool configuration cannot be null");
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(5);
+        taskScheduler.setPoolSize(taskPoolConfig.getCorePoolSize());
         return taskScheduler;
     }
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
-        JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
-        //factory.addErrorPages(new ErrorPage(org.springframework.http.HttpStatus.NOT_FOUND, "/index.html"),
-        //        new ErrorPage(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "/index.html"));
-        return factory;
+        return new JettyEmbeddedServletContainerFactory();
     }
 
     /**
@@ -122,7 +107,6 @@ public class WebConfig {
         objectMapper.registerModule(new GuavaExtrasModule());
         objectMapper.registerModule(new GuavaModule());
 
-        //objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);

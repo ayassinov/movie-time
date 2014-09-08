@@ -17,6 +17,7 @@
 package com.ninjas.movietime.resource;
 
 import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import java.util.List;
  * @author ayassinov on 11/07/14
  */
 @RestController
-@RequestMapping("/theater")
+@RequestMapping("api/${movietime.app.apiVersion}/theater")
 public class TheaterResource {
 
     private final TheaterService theaterService;
@@ -41,6 +42,7 @@ public class TheaterResource {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Theater> all() {
+        MetricManager.markResourceMeter("theater", "all");
         return theaterService.listAll();
     }
 }

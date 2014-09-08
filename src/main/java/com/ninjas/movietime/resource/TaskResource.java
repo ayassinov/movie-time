@@ -1,7 +1,9 @@
 package com.ninjas.movietime.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.api.Task;
+import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,11 +29,19 @@ public class TaskResource {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Task> listTasks() throws JsonProcessingException {
+        MetricManager.markResourceMeter("manage", "task", "all");
         return taskService.all();
     }
 
     @RequestMapping(value = "/{task}", method = RequestMethod.GET)
-    public Task getByName(@PathVariable("task") String taskName) {
+    public Optional<Task> getByName(@PathVariable("task") String taskName) {
+        MetricManager.markResourceMeter("manage", "task", taskName);
         return taskService.getByName(taskName);
+    }
+
+    @RequestMapping(value = "/{task}/run", method = RequestMethod.GET)
+    public void runTask(@PathVariable("task") String taskName) {
+        MetricManager.markResourceMeter("manage", "task", taskName, "run");
+        taskService.run(taskName);
     }
 }

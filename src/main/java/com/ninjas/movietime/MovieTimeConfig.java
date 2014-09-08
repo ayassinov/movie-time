@@ -186,6 +186,9 @@ public class MovieTimeConfig {
         @NotNull(message = "Version cannot be null or empty")
         private String version;
 
+        @NotNull(message = "Name cannot be null or empty")
+        private String name;
+
         @NotNull(message = "API Version cannot be null or empty")
         private String apiVersion;
 
