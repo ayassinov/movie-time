@@ -180,6 +180,10 @@ public class IntegrationService {
     }
 
     public boolean updateComingSoonMovie() {
+        List<Movie> movies = alloCineAPI.findComingSoon();
+        for (Movie movie : movies) {
+            integrationRepository.saveMovie(movie);
+        }
         return true;
     }
 

@@ -78,6 +78,8 @@ public class Movie {
 
     private String fanArtUrl;
 
+    private String imageUrl;
+
     private Rating rating;
 
     private List<Nationality> nationality = new ArrayList<>();

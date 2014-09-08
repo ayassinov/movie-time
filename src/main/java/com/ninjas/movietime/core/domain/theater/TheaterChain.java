@@ -42,7 +42,7 @@ import java.util.List;
 public class TheaterChain {
 
     private static final List<String> OFFICIAL_THEATER_CHAIN = ImmutableList
-            .of("81001", "81002", "81003")
+            .of("81001") //UGC only for now
             .asList();
 
     @Id

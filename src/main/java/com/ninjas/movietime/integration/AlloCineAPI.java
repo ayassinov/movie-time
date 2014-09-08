@@ -161,12 +161,18 @@ public class AlloCineAPI {
                 rating
         );
 
+        movie.setImageUrl(node.path("poster").path("href").asText());
         movie.setYear(node.path("productionYear").asInt());
         movie.setSynopsis(node.path("synopsisShort").asText());
-        movie.setMovieType(new MovieType(
-                node.path("movieType").path("code").asText(),
-                node.path("movieType").path("$").asText()
-        ));
+        if (!node.path("movieCertificate").isMissingNode()) {
+            movie.setCertification(node.path("movieCertificate").path("certificate").path("$").asText());
+        }
+        if (!node.path("movieType").isMissingNode()) {
+            movie.setMovieType(new MovieType(
+                    node.path("movieType").path("code").asText(),
+                    node.path("movieType").path("$").asText()
+            ));
+        }
 
         final String[] directorsNames = node.path("castingShort").path("directors").asText().split(",");
         for (String director : directorsNames) {

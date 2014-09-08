@@ -45,7 +45,7 @@ public class TraktTvAPI {
             movie.setTrailerUrl(node.path("trailer").asText());
             movie.setTagLine(node.path("tagline").asText());
             movie.setOverview(node.path("overview").asText());
-            movie.setCertification(node.path("certification").asText());
+            //movie.setCertification(node.path("certification").asText());
             movie.setPosterUrl(node.path("images").path("poster").asText());
             movie.setFanArtUrl(node.path("images").path("fanart").asText());
             movie.getRating().setTrackTvRating(node.path("ratings").path("percentage").asDouble());
@@ -73,7 +73,7 @@ public class TraktTvAPI {
 
             log.debug("Information from trackTv found for the movie {}", movie.getTitle());
 
-        }else {
+        } else {
             throw new CannotFindTrackTvInformationException("Movie not found on TrackTV",
                     movie.getId(), movie.getTimdbId(), movie.getTitle());
         }
