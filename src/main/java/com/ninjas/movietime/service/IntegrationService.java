@@ -2,6 +2,9 @@ package com.ninjas.movietime.service;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.ninjas.movietime.core.domain.exception.CannotFindIMDIdException;
+import com.ninjas.movietime.core.domain.exception.CannotFindRottenTomatoesRatingException;
+import com.ninjas.movietime.core.domain.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
@@ -96,7 +99,7 @@ public class IntegrationService {
             //iterate over every chain to get the theaters list
             for (final TheaterChain theaterChain : theaterChains) {
                 //list all theaters, returning only id field
-                final List<Theater> theaters = integrationRepository.listOpenTheaterByTheaterChain(theaterChain, true);
+                final List<Theater> theaters = integrationRepository.listOpenTheaterByTheaterChain(theaterChain, false);
                 //find showtime from Allo cine API
                 final List<Showtime> showtimes = alloCineAPI.findShowtime(theaters);
                 for (Showtime showtime : showtimes) {
@@ -116,8 +119,14 @@ public class IntegrationService {
         try {
             final List<Movie> movies = integrationRepository.listMovieWithoutTimdbId();
             for (final Movie movie : movies) {
-                if (imdbAPI.updateMovieInformation(movie, DateUtils.getCurrentYear()))
+                try {
+                    imdbAPI.updateMovieInformation(movie, DateUtils.getCurrentYear());
                     integrationRepository.saveMovie(movie);
+                } catch (CannotFindIMDIdException ex) {
+                    ExceptionManager.log(ex, "Information from IMDB not found for the movie %s", movie.getTitle());
+                } catch (Exception ex) {
+                    ExceptionManager.log(ex, "Exception on getting Information from IMDB the movie %s", movie.getTitle());
+                }
             }
         } finally {
             MetricManager.stopTimer(timer);
@@ -132,8 +141,14 @@ public class IntegrationService {
         try {
             final List<Movie> movies = integrationRepository.listMovieWithoutRottenTomatoesRating();
             for (final Movie movie : movies) {
-                if (rottenTomatoesAPI.updateMovieInformation(movie)) {
+                try {
+                    rottenTomatoesAPI.updateMovieInformation(movie);
                     integrationRepository.saveMovie(movie);
+                } catch (CannotFindRottenTomatoesRatingException ex) {
+                    ExceptionManager.log(ex, "Movie not found on RottenTomatoes API to get score updated, imdbID=%s title=%s",
+                            movie.getImdbId(), movie.getTitle());
+                } catch (Exception ex) {
+                    ExceptionManager.log(ex, "Exception on getting RottenTomatoes Rating for movie with id=%s", movie.getId());
                 }
             }
         } finally {
@@ -149,8 +164,14 @@ public class IntegrationService {
         try {
             final List<Movie> movies = integrationRepository.listMovieWithoutTrackTvInformation();
             for (final Movie movie : movies) {
-                if (traktTvAPI.updateMovieInformation(movie)) {
+                try {
+                    traktTvAPI.updateMovieInformation(movie);
                     integrationRepository.saveMovie(movie);
+                } catch (CannotFindTrackTvInformationException ex) {
+                    ExceptionManager.log(ex, "Movie not found on TrackTv API using tImdbID=%s title=%s",
+                            movie.getTimdbId(), movie.getTitle());
+                } catch (Exception ex) {
+                    ExceptionManager.log(ex, "Exception on getting TrackTv information for movie with id=%s", movie.getId());
                 }
             }
         } finally {
@@ -160,5 +181,17 @@ public class IntegrationService {
 
     public boolean updateComingSoonMovie() {
         return true;
+    }
+
+    public List<Movie> listMovieWithoutImdb() {
+        return integrationRepository.listMovieWithoutTimdbId();
+    }
+
+    public List<Movie> listMovieWithoutRottenRating() {
+        return integrationRepository.listMovieWithoutRottenTomatoesRating();
+    }
+
+    public List<Movie> listMovieWithoutTrackTv() {
+        return integrationRepository.listMovieWithoutTrackTvInformation();
     }
 }

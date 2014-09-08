@@ -102,12 +102,16 @@ public class IntegrationRepository {
     }
 
     public List<Theater> listOpenTheaterByTheaterChain(TheaterChain theaterChain, boolean idOnly) {
-        final Query theaterQuery = Query.query(Criteria.where("theaterChain").is(theaterChain).and("isOpen").is(true));
+        //shutDownStatus
+        final Query theaterQuery = Query.query(
+                Criteria.where("theaterChain").is(theaterChain));
         if (idOnly) {
             theaterQuery.fields().include("id");
             log.debug("List Open Theater by Theater Chain returning only id field.");
         }
-        return mongoTemplate.find(theaterQuery, Theater.class);
+        final List<Theater> theaters = mongoTemplate.find(theaterQuery, Theater.class);
+        log.debug("List theaters that are open and by theater chain id={} found theaters={}", theaterChain.getId(), theaters.size());
+        return theaters;
     }
 
     public List<Movie> listMovieWithoutTimdbId() {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ninjas.movietime.core.domain.exception.CannotFindIMDIdException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.DateUtils;
-import com.ninjas.movietime.core.util.ExceptionManager;
 import com.ninjas.movietime.core.util.StringUtils;
 import com.ninjas.movietime.integration.helpers.RequestBuilder;
 import com.ninjas.movietime.integration.helpers.RestClientHelper;
@@ -32,7 +31,7 @@ public class ImdbAPI {
         this.uriCreator = new ImdbURICreator();
     }
 
-    public boolean updateMovieInformation(Movie movie, int movieYear) {
+    public void updateMovieInformation(Movie movie, int movieYear) {
         final URI uri = RequestBuilder.
                 create(uriCreator, "search/movie")
                 .add("query", StringUtils.encode(movie.getTitle()))
@@ -47,11 +46,10 @@ public class ImdbAPI {
             movie.getRating().setImdbVoteCount(node.path("results").get(0).path("vote_count").asInt());
             movie.setTimdbLastUpdate(DateUtils.now());
             log.debug("Information from IMDB found for the movie {}", movie.getTitle());
-            return true;
+        } else {
+
+            throw new CannotFindIMDIdException();
         }
 
-        ExceptionManager.log(new CannotFindIMDIdException("Information from IMDB not found for the movie", movie.getId(),
-                movie.getTitle()), "Information from IMDB not found for the movie %s", movie.getTitle());
-        return false;
     }
 }

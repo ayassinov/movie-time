@@ -16,6 +16,11 @@ public class CannotFindIMDIdException extends RuntimeException {
     public CannotFindIMDIdException() {
     }
 
+    public CannotFindIMDIdException(String movieId, String movieTitle) {
+        this.movieId = movieId;
+        this.movieTitle = movieTitle;
+    }
+
     public CannotFindIMDIdException(String message, String movieId, String movieTitle) {
         super(message);
         this.movieId = movieId;

@@ -5,7 +5,6 @@ import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.DateUtils;
-import com.ninjas.movietime.core.util.ExceptionManager;
 import com.ninjas.movietime.integration.helpers.RequestBuilder;
 import com.ninjas.movietime.integration.helpers.RestClientHelper;
 import com.ninjas.movietime.integration.uri.TraktTvAPIURICreator;
@@ -33,7 +32,7 @@ public class TraktTvAPI {
         this.uriCreator = new TraktTvAPIURICreator();
     }
 
-    public boolean updateMovieInformation(Movie movie) {
+    public void updateMovieInformation(Movie movie) {
         final URI uri = RequestBuilder
                 .create(uriCreator, "movie/summary")
                 .add("imdb", movie.getTimdbId())
@@ -73,14 +72,11 @@ public class TraktTvAPI {
             }
 
             log.debug("Information from trackTv found for the movie {}", movie.getTitle());
-            return true;
-        }
 
-        ExceptionManager.log(new CannotFindTrackTvInformationException("Movie not found on TrackTV",
-                        movie.getId(), movie.getTimdbId(), movie.getTitle()),
-                "Movie %s not found on TrackTv API using tImdbID = %s",
-                movie.getTitle(), movie.getTimdbId());
-        return false;
+        }else {
+            throw new CannotFindTrackTvInformationException("Movie not found on TrackTV",
+                    movie.getId(), movie.getTimdbId(), movie.getTitle());
+        }
     }
 
     private People createPeople(JsonNode node, People.JobEnum job) {

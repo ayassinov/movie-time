@@ -11,3 +11,9 @@ movietime:
     readTimeOut: 2000
     connectTimeout: 2000
     activateMetrics: true
+error:
+  whitelabel:
+    enabled: false
+health:
+  mongodb:
+    enabled: false
