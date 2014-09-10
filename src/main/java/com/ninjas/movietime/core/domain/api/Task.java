@@ -33,7 +33,7 @@ public class Task {
     }
 
     public void addExecutionHistory(boolean isSucceed) {
-        histories.add(new TaskExecutionHistory(isSucceed, DateUtils.now()));
+        histories.add(new TaskExecutionHistory(isSucceed, DateUtils.nowServerDate()));
     }
 
 }

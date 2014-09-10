@@ -46,7 +46,7 @@ public class RottenTomatoesAPI {
             movie.setRottenTomatoesId(node.path("id").asText());
             movie.getRating().setRottenCriticsRating(node.path("ratings").path("critics_score").asDouble());
             movie.getRating().setRottenUserRating(node.path("ratings").path("audience_score").asDouble());
-            movie.setRottenTomatoesLastUpdate(DateUtils.now());
+            movie.getMovieUpdateStatus().setLastRottenTomatoesUpdate(DateUtils.nowServerDateTime());
 
             log.debug("Information from Rotten Tomatoes found for the movie {}", movie.getTitle());
 

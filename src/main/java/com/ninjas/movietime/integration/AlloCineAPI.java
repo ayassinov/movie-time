@@ -18,6 +18,7 @@ package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.People;
 import com.ninjas.movietime.core.domain.movie.*;
 import com.ninjas.movietime.core.domain.showtime.DateAndTime;
@@ -81,8 +82,6 @@ public class AlloCineAPI {
         final URI uri = RequestBuilder
                 .create(uriCreator, "showtimelist")
                 .add("theaters", theatersCode)
-                        //.add("movie", "code")
-                        //.add("date", "YYYY-MM-DD")
                 .build();
         final JsonNode root = restClient.get(uri);
         final List<Showtime> showtimes = new ArrayList<>();
@@ -100,7 +99,7 @@ public class AlloCineAPI {
                 .create(uriCreator, "movielist")
                 .add("filter", "comingsoon")
                 .add("order", "dateasc")
-                .add("count", 40)
+                .add("count", 50)
                         //.add("page", 1)
                 .build();
 
@@ -115,10 +114,28 @@ public class AlloCineAPI {
         return movies;
     }
 
+    public Optional<Movie> getMovie(String movieId) {
+        final URI uri = RequestBuilder
+                .create(uriCreator, "movie")
+                .add("code", movieId)
+                .build();
+
+        final JsonNode root = restClient.get(uri);
+
+        final JsonNode movieNode = root.path("movie");
+        if (movieNode.isMissingNode())
+            return Optional.absent();
+
+
+        final Movie movie = createMovie(movieNode);
+        movie.getMovieUpdateStatus().setAlloCineFullUpdated(true);
+        return Optional.of(movie);
+    }
+
     private Schedule createSchedule(final JsonNode node) {
         final Schedule schedule = new Schedule();
         schedule.setVO(node.path("version").path("original").asBoolean());
-        schedule.setLanguage(new Schedule.Language(
+        schedule.setLanguage(new Language(
                 node.path("version").path("lang").asText(),
                 node.path("version").path("$").asText()));
         schedule.setScreenFormat(new Schedule.ScreenFormat(
@@ -150,23 +167,29 @@ public class AlloCineAPI {
                 node.path("statistics").path("pressRating").asDouble(),
                 node.path("statistics").path("pressReviewCount").asInt(),
                 node.path("statistics").path("userRating").asDouble(),
-                node.path("statistics").path("editorialRatingCount").asInt()
+                node.path("statistics").path("userRatingCount").asInt()
         );
 
         final Movie movie = new Movie(
                 node.path("code").asText(),
                 node.path("title").asText(),
-                DateUtils.parse(node.path("release").path("releaseDate").asText(), "yyyy-MM-dd"),
+                DateUtils.parseDateTime(node.path("release").path("releaseDate").asText(), "yyyy-MM-dd"),
                 node.path("runtime").asInt(),
                 rating
         );
 
-        movie.setImageUrl(node.path("poster").path("href").asText());
+        movie.setOriginalTitle(node.path("originalTitle").asText());
+        movie.setKeyword(node.path("keywords").asText());
+        movie.getImages().add(new Image(node.path("poster").path("href").asText(), Image.ImageTypeEnum.FRENCH_POSTER));
         movie.setYear(node.path("productionYear").asInt());
-        movie.setSynopsis(node.path("synopsisShort").asText());
+        movie.setSynopsis(node.path("synopsis").asText());
+        movie.setSynopsisShort(node.path("synopsisShort").asText());
+        movie.getMovieUpdateStatus().setLastAlloCineUpdate(DateUtils.nowServerDateTime());
+
         if (!node.path("movieCertificate").isMissingNode()) {
             movie.setCertification(node.path("movieCertificate").path("certificate").path("$").asText());
         }
+
         if (!node.path("movieType").isMissingNode()) {
             movie.setMovieType(new MovieType(
                     node.path("movieType").path("code").asText(),
@@ -176,12 +199,16 @@ public class AlloCineAPI {
 
         final String[] directorsNames = node.path("castingShort").path("directors").asText().split(",");
         for (String director : directorsNames) {
-            movie.getDirectors().add(new People(director.trim(), People.JobEnum.DIRECTOR, null));
+            movie.getStaff().getDirectors().add(new People(director.trim(), People.JobEnum.DIRECTOR, null));
         }
 
         final String[] actorNames = node.path("castingShort").path("actors").asText().split(",");
         for (String actor : actorNames) {
-            movie.getActors().add(new People(actor.trim(), People.JobEnum.ACTOR, null, null));
+            movie.getStaff().getActors().add(new People(actor.trim(), People.JobEnum.ACTOR, null, null));
+        }
+
+        for (JsonNode languageNode : node.path("language")) {
+            movie.getLanguages().add(new Language(languageNode.path("code").asText(), languageNode.path("$").asText()));
         }
 
         for (JsonNode genreNode : node.path("genre")) {
@@ -190,6 +217,7 @@ public class AlloCineAPI {
                     genreNode.path("$").asText()
             ));
         }
+
         for (JsonNode nationality : node.path("nationality")) {
             movie.getNationality().add(new Nationality(
                     nationality.path("code").asText(),
@@ -244,5 +272,19 @@ public class AlloCineAPI {
 
         return new Theater(node.path("code").asText(), node.path("name").asText(),
                 geoLocation, address, theaterChain, shutDownStatus);
+    }
+
+    public void updateFullMovieInformation(Movie movieToUpdate) {
+        final Movie movie = this.getMovie(movieToUpdate.getId()).orNull();
+        if (movie == null)
+            return;
+        movieToUpdate.setRating(movie.getRating());
+        movieToUpdate.setOriginalTitle(movie.getOriginalTitle());
+        movieToUpdate.setKeyword(movie.getKeyword());
+        movieToUpdate.setSynopsis(movie.getSynopsis());
+        movieToUpdate.setLanguages(movie.getLanguages());
+        movieToUpdate.setMovieType(movie.getMovieType());
+        movieToUpdate.getMovieUpdateStatus().setAlloCineFullUpdated(true);
+        movieToUpdate.getMovieUpdateStatus().setLastAlloCineUpdate(DateUtils.nowServerDateTime());
     }
 }

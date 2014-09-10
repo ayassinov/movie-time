@@ -38,16 +38,20 @@ public final class DateUtils {
         if (thatDate == null)
             return false;
         final DateTime thatDateTime = new DateTime(thatDate).withTime(0, 0, 0, 0);
-        final DateTime jodaNow = jodaNow().withTime(0, 0, 0, 0);
+        final DateTime jodaNow = nowServerDateTime().withTime(0, 0, 0, 0);
         return thatDateTime.isBefore(jodaNow);
     }
 
-    public static Date now() {
+    public static Date nowServerDate() {
         return DateTime.now(DateTimeZone.forTimeZone(SERVER_TIME_ZONE)).toDate();
     }
 
-    public static DateTime jodaNow() {
+    public static DateTime nowServerDateTime() {
         return DateTime.now(DateTimeZone.forTimeZone(SERVER_TIME_ZONE));
+    }
+
+    public static DateTime nowParisDateTime() {
+        return DateTime.now(DateTimeZone.forTimeZone(PARIS_TIME_ZONE));
     }
 
     public static Date parse(String date) {
@@ -57,9 +61,13 @@ public final class DateUtils {
     }
 
     public static Date parse(String date, String format) {
+        return parseDateTime(date, format).toDate();
+    }
+
+    public static DateTime parseDateTime(String date, String format){
         if (StringUtils.isNullOrEmpty(date))
             return null;
-        return DateTime.parse(date, DateTimeFormat.forPattern(format)).toDate();
+        return DateTime.parse(date, DateTimeFormat.forPattern(format)).withZoneRetainFields(DateTimeZone.forTimeZone(PARIS_TIME_ZONE));
     }
 
     public static int getCurrentYear() {
@@ -68,6 +76,8 @@ public final class DateUtils {
 
     public static Date nextCronStartDate(String cronExpression) {
         final CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cronExpression, SERVER_TIME_ZONE);
-        return cronSequenceGenerator.next(DateUtils.now());
+        return cronSequenceGenerator.next(DateUtils.nowServerDate());
     }
+
+
 }

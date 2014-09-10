@@ -16,22 +16,20 @@
 
 package com.ninjas.movietime.core.domain.movie;
 
-import com.ninjas.movietime.core.domain.People;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
-import com.ninjas.movietime.core.util.DateUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,39 +48,39 @@ public class Movie {
 
     private String imdbId;
 
+    private String timdbId;
+
+    private String trackTvId; //new
+
     private String rottenTomatoesId;
 
-    private String timdbId;
+    private String title;
 
     private String imdbTitle;
 
-    private String title;
+    private String originalTitle; //new
+
+    private String keyword;
+
+    private String synopsis; //new
+
+    private String synopsisShort;
+
+    private int runtime;
 
     @Indexed
     private int year;
 
     @Indexed
-    private Date releaseDate;
+    private DateTime releaseDate;
 
-    private int runtime;
-
-    private String trailerUrl;
-
-    private String tagLine;
-
-    private String overview;
+    private String trailerUrl; //not always exists !
 
     private String certification;
 
-    private String posterUrl;
-
-    private String fanArtUrl;
-
-    private String imageUrl;
-
     private Rating rating;
 
-    private List<Nationality> nationality = new ArrayList<>();
+    private Staff staff = new Staff();
 
     @DBRef
     private MovieType movieType;
@@ -90,43 +88,26 @@ public class Movie {
     @DBRef
     private List<Genre> genres = new ArrayList<>();
 
-    @DBRef
-    private List<People> directors = new ArrayList<>();
+    private List<Image> images = new ArrayList<>();
 
-    @DBRef
-    private List<People> writers = new ArrayList<>();
+    private List<Nationality> nationality = new ArrayList<>();
 
-    @DBRef
-    private List<People> actors = new ArrayList<>();
-
-    @DBRef
-    private List<People> producers = new ArrayList<>();
-
-    @Indexed
-    private Date lastUpdate;
-
-    @Indexed
-    private Date rottenTomatoesLastUpdate;
-
-    @Indexed
-    private Date timdbLastUpdate;
-
-    @Indexed
-    private Date traktLastUpdate;
-
-    @Transient
     private List<Showtime> showtime = new ArrayList<>();
-    private String synopsis;
+
+    private List<Language> languages = new ArrayList<>();
+
+    @JsonIgnore
+    private MovieUpdateStatus movieUpdateStatus = new MovieUpdateStatus();
 
     public Movie() {
-        this.lastUpdate = DateUtils.now();
+
     }
 
     public Movie(String id) {
         this.id = id;
     }
 
-    public Movie(String id, String title, Date releaseDate, int runtime, Rating rating) {
+    public Movie(String id, String title, DateTime releaseDate, int runtime, Rating rating) {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;

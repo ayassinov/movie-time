@@ -52,22 +52,24 @@ public class IntegrationRepository {
     public void saveMovie(Movie movie) {
         Preconditions.checkNotNull(movie, "Movie to save cannot be null");
         try {
-            for (People actor : movie.getActors())
+            for (People actor : movie.getStaff().getActors())
                 mongoTemplate.save(actor);
 
-            for (People director : movie.getDirectors())
+            for (People director : movie.getStaff().getDirectors())
                 mongoTemplate.save(director);
 
-            for (People writer : movie.getWriters())
+            for (People writer : movie.getStaff().getWriters())
                 mongoTemplate.save(writer);
 
-            for (People producer : movie.getProducers())
+            for (People producer : movie.getStaff().getProducers())
                 mongoTemplate.save(producer);
 
             for (Genre genre : movie.getGenres())
                 mongoTemplate.save(genre);
 
-            mongoTemplate.save(movie.getMovieType());
+            if (movie.getMovieType() != null)
+                mongoTemplate.save(movie.getMovieType());
+
             mongoTemplate.save(movie);
         } catch (Exception ex) {
             ExceptionManager.log(ex, "Error on saving Movie title %s to mongodb", movie.getTitle());
@@ -115,14 +117,14 @@ public class IntegrationRepository {
     }
 
     public List<Movie> listMovieWithoutTimdbId() {
-        final Query query = Query.query(Criteria.where("timdbLastUpdate").is(null));
+        final Query query = Query.query(Criteria.where("timdbId").is(null));
         final List<Movie> movies = mongoTemplate.find(query, Movie.class);
         log.debug("Found {} Movies without timdb Id", movies.size());
         return movies;
     }
 
     public List<Movie> listMovieWithoutRottenTomatoesRating() {
-        final Query query = Query.query(Criteria.where("rottenTomatoesLastUpdate").is(null).and("imdbId").ne(null));
+        final Query query = Query.query(Criteria.where("rottenTomatoesId").is(null).and("imdbId").ne(null));
 
         final List<Movie> movies = mongoTemplate.find(query, Movie.class);
         log.debug("Found {} Movies without Rotten tomatoes rating", movies.size());
@@ -133,6 +135,13 @@ public class IntegrationRepository {
         final Query query = Query.query(Criteria.where("traktLastUpdate").is(null).and("timdbId").ne(null));
         final List<Movie> movies = mongoTemplate.find(query, Movie.class);
         log.debug("Found {} Movies without trackTV information and rating", movies.size());
+        return movies;
+    }
+
+    public List<Movie> listMovieNotFullyUpdated() {
+        final Query query = Query.query(Criteria.where("movieUpdateStatus.isAlloCineFullUpdated").is(false));
+        final List<Movie> movies = mongoTemplate.find(query, Movie.class);
+        log.debug("Found {} Movies not fully updated from alloCine API", movies.size());
         return movies;
     }
 }

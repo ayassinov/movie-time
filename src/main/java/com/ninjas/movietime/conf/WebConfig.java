@@ -29,6 +29,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.TaskScheduler;
@@ -41,6 +42,7 @@ import javax.annotation.PostConstruct;
  * @author ayassinov on 15/08/14.
  */
 @Configuration
+@EnableMongoAuditing
 public class WebConfig {
 
     @Autowired

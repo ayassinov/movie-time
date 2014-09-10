@@ -69,7 +69,7 @@ public class TheaterChain {
     public TheaterChain(String id, String name) {
         this.id = id;
         this.name = name;
-        this.lastUpdate = DateUtils.now();
+        this.lastUpdate = DateUtils.nowServerDate();
         this.isTracked = isTracked();
     }
 

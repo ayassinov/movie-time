@@ -82,7 +82,7 @@ public class TaskService {
 
     private void saveTaskExecutionHistory(final Task task, boolean isSucceed) {
         task.addExecutionHistory(isSucceed);
-        task.setLastExecutionDate(DateUtils.now());
+        task.setLastExecutionDate(DateUtils.nowServerDate());
         task.setNextExecutionDate(DateUtils.nextCronStartDate(task.getCron()));
         save(task);
         log.info("Task was successfully executed. task={} at={} next={}", task.getTaskEnum(),

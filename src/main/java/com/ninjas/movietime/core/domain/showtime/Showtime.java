@@ -66,7 +66,7 @@ public class Showtime {
         this.id = String.format("%s_%s", theater.getId(), movie.getId());
         this.theater = theater;
         this.movie = movie;
-        this.lastUpdate = DateUtils.now();
+        this.lastUpdate = DateUtils.nowServerDate();
         this.getTheater().getShowtime().add(this);
         this.getMovie().getShowtime().add(this);
     }

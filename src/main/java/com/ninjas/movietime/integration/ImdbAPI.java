@@ -44,7 +44,7 @@ public class ImdbAPI {
             movie.setImdbTitle(node.path("results").get(0).path("title").asText()); //second Title
             movie.getRating().setImdbRating(node.path("results").get(0).path("vote_average").asDouble());
             movie.getRating().setImdbVoteCount(node.path("results").get(0).path("vote_count").asInt());
-            movie.setTimdbLastUpdate(DateUtils.now());
+            movie.getMovieUpdateStatus().setLastImdbUpdate(DateUtils.nowServerDateTime());
             log.debug("Information from IMDB found for the movie {}", movie.getTitle());
         } else {
 

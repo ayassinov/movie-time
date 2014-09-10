@@ -1,5 +1,6 @@
 package com.ninjas.movietime.core.domain.showtime;
 
+import com.ninjas.movietime.core.domain.movie.Language;
 import lombok.Data;
 import lombok.ToString;
 
@@ -45,14 +46,4 @@ public class Schedule {
         }
     }
 
-    @Data
-    public static class Language {
-        private String code;
-        private String name;
-
-        public Language(String code, String name) {
-            this.code = code;
-            this.name = name;
-        }
-    }
 }

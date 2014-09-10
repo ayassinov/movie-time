@@ -78,11 +78,21 @@ public class IntegrationService {
      *                      to only those how are official see TheaterChain class for the complete list
      */
     public boolean updateMovieShowtime(boolean isTrackedOnly) {
-        updateShowtime(isTrackedOnly);
+        //updateShowtime(isTrackedOnly);
         updateImdbId();
         updateTraktTvInformation();
         updateRottenTomatoesInformation();
+        updateMovieFullDetail();
         return true;
+    }
+
+    public void updateMovieFullDetail() {
+        //select movies without full information
+        final List<Movie> movies = integrationRepository.listMovieNotFullyUpdated();
+        for (Movie movie : movies) {
+            alloCineAPI.updateFullMovieInformation(movie);
+            integrationRepository.saveMovie(movie);
+        }
     }
 
 
@@ -184,6 +194,10 @@ public class IntegrationService {
         for (Movie movie : movies) {
             integrationRepository.saveMovie(movie);
         }
+
+        updateImdbId();
+        updateTraktTvInformation();
+        updateMovieFullDetail();
         return true;
     }
 
