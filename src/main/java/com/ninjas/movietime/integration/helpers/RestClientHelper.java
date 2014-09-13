@@ -34,7 +34,7 @@ public class RestClientHelper {
     }
 
     public <T> T get(@NonNull final URI uri, Class<T> clazz) {
-        final Optional<Timer.Context> timer = MetricManager.startTimer("get", uri.getPath());
+        final Optional<Timer.Context> timer = MetricManager.startTimer("get", uri.getPath().replace("/", "."));
         try {
             return restTemplate.getForObject(uri, clazz);
         } catch (RestClientException ex) {
@@ -46,7 +46,7 @@ public class RestClientHelper {
     }
 
     public JsonNode get(@NonNull final URI uri) {
-        final Optional<Timer.Context> timer = MetricManager.startTimer("get", uri.getPath());
+        final Optional<Timer.Context> timer = MetricManager.startTimer("get", uri.getPath().replace("/", "."));
         try {
             final ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
             if (response.getStatusCode() != HttpStatus.OK)

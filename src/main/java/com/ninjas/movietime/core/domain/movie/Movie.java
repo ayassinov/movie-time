@@ -24,6 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -69,9 +70,6 @@ public class Movie {
     private int runtime;
 
     @Indexed
-    private int year;
-
-    @Indexed
     private DateTime releaseDate;
 
     private String trailerUrl; //not always exists !
@@ -92,9 +90,8 @@ public class Movie {
 
     private List<Nationality> nationality = new ArrayList<>();
 
+    @Transient
     private List<Showtime> showtime = new ArrayList<>();
-
-    private List<Language> languages = new ArrayList<>();
 
     @JsonIgnore
     private MovieUpdateStatus movieUpdateStatus = new MovieUpdateStatus();

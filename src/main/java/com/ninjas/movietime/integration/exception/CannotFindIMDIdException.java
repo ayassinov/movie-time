@@ -1,4 +1,4 @@
-package com.ninjas.movietime.core.domain.exception;
+package com.ninjas.movietime.integration.exception;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -22,7 +22,7 @@ public class CannotFindIMDIdException extends RuntimeException {
     }
 
     public CannotFindIMDIdException(String message, String movieId, String movieTitle) {
-        super(message);
+        super(String.format(message, movieId, movieTitle));
         this.movieId = movieId;
         this.movieTitle = movieTitle;
     }

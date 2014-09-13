@@ -1,16 +1,16 @@
 package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ninjas.movietime.core.domain.exception.CannotFindIMDIdException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.DateUtils;
 import com.ninjas.movietime.core.util.StringUtils;
+import com.ninjas.movietime.integration.exception.CannotFindIMDIdException;
 import com.ninjas.movietime.integration.helpers.RequestBuilder;
 import com.ninjas.movietime.integration.helpers.RestClientHelper;
-import com.ninjas.movietime.integration.uri.ImdbURICreator;
 import com.ninjas.movietime.integration.uri.URICreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -26,9 +26,9 @@ public class ImdbAPI {
     private final URICreator uriCreator;
 
     @Autowired
-    public ImdbAPI(RestClientHelper restClient) {
+    public ImdbAPI(RestClientHelper restClient, @Qualifier("imdbURICreator") URICreator uriCreator) {
         this.restClient = restClient;
-        this.uriCreator = new ImdbURICreator();
+        this.uriCreator = uriCreator;
     }
 
     public void updateMovieInformation(Movie movie, int movieYear) {
@@ -48,7 +48,7 @@ public class ImdbAPI {
             log.debug("Information from IMDB found for the movie {}", movie.getTitle());
         } else {
 
-            throw new CannotFindIMDIdException();
+            throw new CannotFindIMDIdException("Cannot find movie id=% title=%s", movie.getId(), movie.getTitle());
         }
 
     }

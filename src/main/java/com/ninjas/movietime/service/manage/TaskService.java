@@ -1,10 +1,11 @@
-package com.ninjas.movietime.service;
+package com.ninjas.movietime.service.manage;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.api.Task;
 import com.ninjas.movietime.core.util.DateUtils;
-import com.ninjas.movietime.repository.TaskRepository;
+import com.ninjas.movietime.repository.manage.TaskRepository;
+import com.ninjas.movietime.service.IntegrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

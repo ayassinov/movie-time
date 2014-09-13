@@ -132,7 +132,7 @@ public class IntegrationRepository {
     }
 
     public List<Movie> listMovieWithoutTrackTvInformation() {
-        final Query query = Query.query(Criteria.where("traktLastUpdate").is(null).and("timdbId").ne(null));
+        final Query query = Query.query(Criteria.where("trackTvId").is(null).and("timdbId").ne(null));
         final List<Movie> movies = mongoTemplate.find(query, Movie.class);
         log.debug("Found {} Movies without trackTV information and rating", movies.size());
         return movies;

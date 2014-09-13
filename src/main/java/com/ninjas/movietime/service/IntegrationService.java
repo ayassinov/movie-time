@@ -2,20 +2,19 @@ package com.ninjas.movietime.service;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.ninjas.movietime.core.domain.exception.CannotFindIMDIdException;
-import com.ninjas.movietime.core.domain.exception.CannotFindRottenTomatoesRatingException;
-import com.ninjas.movietime.core.domain.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.core.domain.theater.TheaterChain;
-import com.ninjas.movietime.core.util.DateUtils;
 import com.ninjas.movietime.core.util.ExceptionManager;
 import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.integration.AlloCineAPI;
 import com.ninjas.movietime.integration.ImdbAPI;
 import com.ninjas.movietime.integration.RottenTomatoesAPI;
 import com.ninjas.movietime.integration.TraktTvAPI;
+import com.ninjas.movietime.integration.exception.CannotFindIMDIdException;
+import com.ninjas.movietime.integration.exception.CannotFindRottenTomatoesRatingException;
+import com.ninjas.movietime.integration.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.repository.IntegrationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,23 +77,34 @@ public class IntegrationService {
      *                      to only those how are official see TheaterChain class for the complete list
      */
     public boolean updateMovieShowtime(boolean isTrackedOnly) {
-        //updateShowtime(isTrackedOnly);
+        updateShowtime(isTrackedOnly);
+        updateMovieFullDetail();
         updateImdbId();
         updateTraktTvInformation();
         updateRottenTomatoesInformation();
-        updateMovieFullDetail();
         return true;
     }
 
-    public void updateMovieFullDetail() {
+
+    private void updateMovieFullDetail() {
         //select movies without full information
-        final List<Movie> movies = integrationRepository.listMovieNotFullyUpdated();
-        for (Movie movie : movies) {
-            alloCineAPI.updateFullMovieInformation(movie);
-            integrationRepository.saveMovie(movie);
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateMovieFullDetail");
+        try {
+            final List<Movie> movies = integrationRepository.listMovieNotFullyUpdated();
+            for (Movie movie : movies) {
+                try {
+                    alloCineAPI.updateFullMovieInformation(movie);
+                    integrationRepository.saveMovie(movie);
+                    Thread.sleep(5000); //Sorry for this !, wait 5 sec between calls, so AlloCine will not block us
+                } catch (Exception ex) {
+                    ExceptionManager.log(ex, "Full information from AlloCine not found for the movie id=%s title=%s",
+                            movie.getId(), movie.getTitle());
+                }
+            }
+        } finally {
+            MetricManager.stopTimer(timer);
         }
     }
-
 
     /**
      * Update showtime and movie information from alloCine API
@@ -130,12 +140,12 @@ public class IntegrationService {
             final List<Movie> movies = integrationRepository.listMovieWithoutTimdbId();
             for (final Movie movie : movies) {
                 try {
-                    imdbAPI.updateMovieInformation(movie, DateUtils.getCurrentYear());
+                    imdbAPI.updateMovieInformation(movie, movie.getReleaseDate().getYear());
                     integrationRepository.saveMovie(movie);
                 } catch (CannotFindIMDIdException ex) {
-                    ExceptionManager.log(ex, "Information from IMDB not found for the movie %s", movie.getTitle());
+                    ExceptionManager.log(ex, "Information from IMDB not found for the movie id=%s title=%s", movie.getId(), movie.getTitle());
                 } catch (Exception ex) {
-                    ExceptionManager.log(ex, "Exception on getting Information from IMDB the movie %s", movie.getTitle());
+                    ExceptionManager.log(ex, "Exception on getting Information from IMDB the movie id=%s title=%s", movie.getId(), movie.getTitle());
                 }
             }
         } finally {
@@ -158,7 +168,8 @@ public class IntegrationService {
                     ExceptionManager.log(ex, "Movie not found on RottenTomatoes API to get score updated, imdbID=%s title=%s",
                             movie.getImdbId(), movie.getTitle());
                 } catch (Exception ex) {
-                    ExceptionManager.log(ex, "Exception on getting RottenTomatoes Rating for movie with id=%s", movie.getId());
+                    ExceptionManager.log(ex, "Exception on getting RottenTomatoes Rating for movie with id=%s imdbID=%s title=%s", movie.getId()
+                            , movie.getImdbId(), movie.getTitle());
                 }
             }
         } finally {
@@ -178,10 +189,10 @@ public class IntegrationService {
                     traktTvAPI.updateMovieInformation(movie);
                     integrationRepository.saveMovie(movie);
                 } catch (CannotFindTrackTvInformationException ex) {
-                    ExceptionManager.log(ex, "Movie not found on TrackTv API using tImdbID=%s title=%s",
-                            movie.getTimdbId(), movie.getTitle());
+                    ExceptionManager.log(ex, "Movie not found on TrackTv API using id=%s tImdbID=%s title=%s",
+                            movie.getId(), movie.getTimdbId(), movie.getTitle());
                 } catch (Exception ex) {
-                    ExceptionManager.log(ex, "Exception on getting TrackTv information for movie with id=%s", movie.getId());
+                    ExceptionManager.log(ex, "Exception on getting TrackTv information for movie with id=%s title=%s", movie.getId(), movie.getTitle());
                 }
             }
         } finally {

@@ -1,10 +1,10 @@
-package com.ninjas.movietime.resource;
+package com.ninjas.movietime.resource.manage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.api.Task;
 import com.ninjas.movietime.core.util.MetricManager;
-import com.ninjas.movietime.service.TaskService;
+import com.ninjas.movietime.service.manage.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

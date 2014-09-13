@@ -2,15 +2,15 @@ package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Preconditions;
-import com.ninjas.movietime.core.domain.exception.CannotFindRottenTomatoesRatingException;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.DateUtils;
+import com.ninjas.movietime.integration.exception.CannotFindRottenTomatoesRatingException;
 import com.ninjas.movietime.integration.helpers.RequestBuilder;
 import com.ninjas.movietime.integration.helpers.RestClientHelper;
-import com.ninjas.movietime.integration.uri.RottenTomatoesURICreator;
 import com.ninjas.movietime.integration.uri.URICreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -27,9 +27,9 @@ public class RottenTomatoesAPI {
     private final URICreator uriCreator;
 
     @Autowired
-    public RottenTomatoesAPI(RestClientHelper restClient) {
+    public RottenTomatoesAPI(RestClientHelper restClient, @Qualifier("rottenTomatoesURICreator") URICreator uriCreator) {
         this.restClient = restClient;
-        this.uriCreator = new RottenTomatoesURICreator();
+        this.uriCreator = uriCreator;
     }
 
     public void updateMovieInformation(Movie movie) {

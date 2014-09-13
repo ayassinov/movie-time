@@ -2,16 +2,16 @@ package com.ninjas.movietime.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ninjas.movietime.core.domain.People;
-import com.ninjas.movietime.core.domain.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.core.domain.movie.Image;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.DateUtils;
+import com.ninjas.movietime.integration.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.integration.helpers.RequestBuilder;
 import com.ninjas.movietime.integration.helpers.RestClientHelper;
-import com.ninjas.movietime.integration.uri.TraktTvAPIURICreator;
 import com.ninjas.movietime.integration.uri.URICreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -28,9 +28,9 @@ public class TraktTvAPI {
     private final URICreator uriCreator;
 
     @Autowired
-    public TraktTvAPI(RestClientHelper restClient) {
+    public TraktTvAPI(RestClientHelper restClient, @Qualifier("traktTvAPIURICreator") URICreator uriCreator) {
         this.restClient = restClient;
-        this.uriCreator = new TraktTvAPIURICreator();
+        this.uriCreator = uriCreator;
     }
 
     public void updateMovieInformation(Movie movie) {
@@ -42,6 +42,7 @@ public class TraktTvAPI {
         final JsonNode node = restClient.get(uri);
         if (!node.path("title").isMissingNode()) {
             movie.setImdbId(node.path("imdb_id").asText().replace("tt", ""));
+            movie.setTrackTvId(node.path("imdb_id").asText());
             movie.setTrailerUrl(node.path("trailer").asText());
             movie.getImages().add(new Image(node.path("images").path("poster").asText(), Image.ImageTypeEnum.ORIGINAL_POSTER));
             movie.getImages().add(new Image(node.path("images").path("fanart").asText(), Image.ImageTypeEnum.FAN_ART));

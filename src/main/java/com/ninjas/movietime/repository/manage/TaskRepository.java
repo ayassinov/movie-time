@@ -1,4 +1,4 @@
-package com.ninjas.movietime.repository;
+package com.ninjas.movietime.repository.manage;
 
 import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.api.Task;

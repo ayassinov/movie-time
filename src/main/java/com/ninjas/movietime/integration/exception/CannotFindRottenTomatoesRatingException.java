@@ -1,4 +1,4 @@
-package com.ninjas.movietime.core.domain.exception;
+package com.ninjas.movietime.integration.exception;
 
 import lombok.Getter;
 import lombok.ToString;

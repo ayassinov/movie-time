@@ -17,7 +17,7 @@
 package com.ninjas.movietime;
 
 import com.ninjas.movietime.core.domain.api.Task;
-import com.ninjas.movietime.service.TaskService;
+import com.ninjas.movietime.service.manage.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
