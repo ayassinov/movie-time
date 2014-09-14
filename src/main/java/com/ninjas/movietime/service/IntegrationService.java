@@ -16,6 +16,7 @@ import com.ninjas.movietime.integration.exception.CannotFindIMDIdException;
 import com.ninjas.movietime.integration.exception.CannotFindRottenTomatoesRatingException;
 import com.ninjas.movietime.integration.exception.CannotFindTrackTvInformationException;
 import com.ninjas.movietime.repository.IntegrationRepository;
+import com.ninjas.movietime.repository.manage.StatusRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class IntegrationService {
     private final String className = this.getClass().getCanonicalName();
 
     private final IntegrationRepository integrationRepository;
+    private final StatusRepository statusRepository;
     private final AlloCineAPI alloCineAPI;
     private final ImdbAPI imdbAPI;
     private final RottenTomatoesAPI rottenTomatoesAPI;
@@ -39,11 +41,13 @@ public class IntegrationService {
 
     @Autowired
     public IntegrationService(IntegrationRepository integrationRepository,
+                              StatusRepository statusRepository,
                               AlloCineAPI alloCineAPI,
                               ImdbAPI imdbAPI,
                               RottenTomatoesAPI rottenTomatoesAPI,
                               TraktTvAPI traktTvAPI) {
         this.integrationRepository = integrationRepository;
+        this.statusRepository = statusRepository;
         this.alloCineAPI = alloCineAPI;
         this.imdbAPI = imdbAPI;
         this.rottenTomatoesAPI = rottenTomatoesAPI;
@@ -90,7 +94,7 @@ public class IntegrationService {
         //select movies without full information
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateMovieFullDetail");
         try {
-            final List<Movie> movies = integrationRepository.listMovieNotFullyUpdated();
+            final List<Movie> movies = statusRepository.listMovieNotFullyUpdated();
             for (Movie movie : movies) {
                 try {
                     alloCineAPI.updateFullMovieInformation(movie);
@@ -137,7 +141,7 @@ public class IntegrationService {
     private void updateImdbId() {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateImdbId");
         try {
-            final List<Movie> movies = integrationRepository.listMovieWithoutTimdbId();
+            final List<Movie> movies = statusRepository.listMovieWithoutTimdbId();
             for (final Movie movie : movies) {
                 try {
                     imdbAPI.updateMovieInformation(movie, movie.getReleaseDate().getYear());
@@ -159,7 +163,7 @@ public class IntegrationService {
     private void updateRottenTomatoesInformation() {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateRottenTomatoesInformation");
         try {
-            final List<Movie> movies = integrationRepository.listMovieWithoutRottenTomatoesRating();
+            final List<Movie> movies = statusRepository.listMovieWithoutRottenTomatoesRating();
             for (final Movie movie : movies) {
                 try {
                     rottenTomatoesAPI.updateMovieInformation(movie);
@@ -183,7 +187,7 @@ public class IntegrationService {
     private void updateTraktTvInformation() {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateTraktTvInformation");
         try {
-            final List<Movie> movies = integrationRepository.listMovieWithoutTrackTvInformation();
+            final List<Movie> movies = statusRepository.listMovieWithoutTrackTvInformation();
             for (final Movie movie : movies) {
                 try {
                     traktTvAPI.updateMovieInformation(movie);
@@ -210,17 +214,5 @@ public class IntegrationService {
         updateTraktTvInformation();
         updateMovieFullDetail();
         return true;
-    }
-
-    public List<Movie> listMovieWithoutImdb() {
-        return integrationRepository.listMovieWithoutTimdbId();
-    }
-
-    public List<Movie> listMovieWithoutRottenRating() {
-        return integrationRepository.listMovieWithoutRottenTomatoesRating();
-    }
-
-    public List<Movie> listMovieWithoutTrackTv() {
-        return integrationRepository.listMovieWithoutTrackTvInformation();
     }
 }

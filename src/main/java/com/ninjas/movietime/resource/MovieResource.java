@@ -1,6 +1,7 @@
 package com.ninjas.movietime.resource;
 
 import com.ninjas.movietime.core.domain.movie.Movie;
+import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ public class MovieResource {
     @RequestMapping("/coming")
     public List<Movie> listComingSoon(@RequestParam(value = "page", required = true, defaultValue = "1") int page,
                                       @RequestParam(value = "count", required = true, defaultValue = "10") int count) {
+        MetricManager.markResourceMeter("movie", "coming");
         return movieService.listComingSoon(page, count);
     }
 }

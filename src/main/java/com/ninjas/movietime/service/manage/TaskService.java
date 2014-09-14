@@ -1,9 +1,11 @@
 package com.ninjas.movietime.service.manage;
 
+import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.api.Task;
 import com.ninjas.movietime.core.util.DateUtils;
+import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.repository.manage.TaskRepository;
 import com.ninjas.movietime.service.IntegrationService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,8 @@ import java.util.List;
 @Service
 public class TaskService {
 
+    private final String className = this.getClass().getCanonicalName();
+
     private final TaskRepository taskRepository;
     private final IntegrationService integrationService;
 
@@ -30,27 +34,36 @@ public class TaskService {
     }
 
     public Task save(Task task) {
-        return taskRepository.save(task);
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "save");
+        try {
+            return taskRepository.save(task);
+        } finally {
+            MetricManager.stopTimer(timer);
+        }
     }
 
     public List<Task> all() {
-        return taskRepository.findAll();
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "all");
+        try {
+            return taskRepository.findAll();
+        } finally {
+            MetricManager.stopTimer(timer);
+        }
     }
 
     public Optional<Task> getByName(String taskName) {
-        return Optional.fromNullable(taskRepository.findById(taskName));
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "getByName");
+        try {
+            return Optional.fromNullable(taskRepository.findById(taskName));
+        } finally {
+            MetricManager.stopTimer(timer);
+        }
     }
 
     @Async
     public void run(final String taskName) {
         Runnable runnable = runnableTask(taskName);
         runnable.run();
-    }
-
-
-    public Runnable runnableTask(final String taskName) {
-        Preconditions.checkNotNull(taskName, "Task name cannot be null");
-        return runnableTask(getByName(taskName).orNull());
     }
 
     public Runnable runnableTask(final Task task) {
@@ -79,6 +92,11 @@ public class TaskService {
                 saveTaskExecutionHistory(task, isSucceed);
             }
         };
+    }
+
+    private Runnable runnableTask(final String taskName) {
+        Preconditions.checkNotNull(taskName, "Task name cannot be null");
+        return runnableTask(getByName(taskName).orNull());
     }
 
     private void saveTaskExecutionHistory(final Task task, boolean isSucceed) {

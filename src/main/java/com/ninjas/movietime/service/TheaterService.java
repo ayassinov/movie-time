@@ -16,7 +16,10 @@
 
 package com.ninjas.movietime.service;
 
+import com.codahale.metrics.Timer;
+import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.repository.TheaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ import java.util.List;
 @Service
 public class TheaterService {
 
+    private final String className = this.getClass().getCanonicalName();
+
     private final TheaterRepository theaterRepository;
 
     @Autowired
@@ -37,6 +42,11 @@ public class TheaterService {
     }
 
     public List<Theater> listAll() {
-        return theaterRepository.findAll();
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "getAppInformation");
+        try {
+            return theaterRepository.findAll();
+        } finally {
+            MetricManager.stopTimer(timer);
+        }
     }
 }

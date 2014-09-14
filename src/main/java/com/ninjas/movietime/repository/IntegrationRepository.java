@@ -115,33 +115,4 @@ public class IntegrationRepository {
         log.debug("List theaters that are open and by theater chain id={} found theaters={}", theaterChain.getId(), theaters.size());
         return theaters;
     }
-
-    public List<Movie> listMovieWithoutTimdbId() {
-        final Query query = Query.query(Criteria.where("timdbId").is(null));
-        final List<Movie> movies = mongoTemplate.find(query, Movie.class);
-        log.debug("Found {} Movies without timdb Id", movies.size());
-        return movies;
-    }
-
-    public List<Movie> listMovieWithoutRottenTomatoesRating() {
-        final Query query = Query.query(Criteria.where("rottenTomatoesId").is(null).and("imdbId").ne(null));
-
-        final List<Movie> movies = mongoTemplate.find(query, Movie.class);
-        log.debug("Found {} Movies without Rotten tomatoes rating", movies.size());
-        return movies;
-    }
-
-    public List<Movie> listMovieWithoutTrackTvInformation() {
-        final Query query = Query.query(Criteria.where("trackTvId").is(null).and("timdbId").ne(null));
-        final List<Movie> movies = mongoTemplate.find(query, Movie.class);
-        log.debug("Found {} Movies without trackTV information and rating", movies.size());
-        return movies;
-    }
-
-    public List<Movie> listMovieNotFullyUpdated() {
-        final Query query = Query.query(Criteria.where("movieUpdateStatus.isAlloCineFullUpdated").is(false));
-        final List<Movie> movies = mongoTemplate.find(query, Movie.class);
-        log.debug("Found {} Movies not fully updated from alloCine API", movies.size());
-        return movies;
-    }
 }

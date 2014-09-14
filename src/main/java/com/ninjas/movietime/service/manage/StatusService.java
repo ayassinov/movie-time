@@ -38,7 +38,37 @@ public class StatusService {
     public List<Movie> listMovieNotFullyUpdated() {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listMovieNotFullyUpdated");
         try {
-            return this.statusRepository.moviesWithoutCompleteInformation();
+            return this.statusRepository.listMovieNotFullyUpdated();
+        } finally {
+            MetricManager.stopTimer(timer);
+
+        }
+    }
+
+    public List<Movie> listMovieWithoutImdb() {
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listMovieWithoutImdb");
+        try {
+            return statusRepository.listMovieWithoutTimdbId();
+        } finally {
+            MetricManager.stopTimer(timer);
+
+        }
+    }
+
+    public List<Movie> listMovieWithoutRottenRating() {
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listMovieWithoutRottenRating");
+        try {
+            return statusRepository.listMovieWithoutRottenTomatoesRating();
+        } finally {
+            MetricManager.stopTimer(timer);
+
+        }
+    }
+
+    public List<Movie> listMovieWithoutTrackTv() {
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listMovieWithoutTrackTv");
+        try {
+            return statusRepository.listMovieWithoutTrackTvInformation();
         } finally {
             MetricManager.stopTimer(timer);
 
