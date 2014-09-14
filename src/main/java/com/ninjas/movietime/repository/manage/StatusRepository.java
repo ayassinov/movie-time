@@ -26,9 +26,9 @@ public class StatusRepository {
 
 
     public List<Movie> moviesWithPropertyNull(String property) {
-        final Query query = Query.query(Criteria.where(property).is(true));
+        final Query query = Query.query(Criteria.where(property).is(null));
         final List<Movie> movies = mongoTemplate.find(query, Movie.class);
-        log.debug("Found {} Movies without critical information", movies.size());
+        log.debug("Found {} Movies without {}", movies.size(), property);
         return movies;
     }
 

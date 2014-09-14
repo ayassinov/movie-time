@@ -40,12 +40,8 @@ public class IntegrationService {
     private final TraktTvAPI traktTvAPI;
 
     @Autowired
-    public IntegrationService(IntegrationRepository integrationRepository,
-                              StatusRepository statusRepository,
-                              AlloCineAPI alloCineAPI,
-                              ImdbAPI imdbAPI,
-                              RottenTomatoesAPI rottenTomatoesAPI,
-                              TraktTvAPI traktTvAPI) {
+    public IntegrationService(IntegrationRepository integrationRepository, StatusRepository statusRepository,
+                              AlloCineAPI alloCineAPI, ImdbAPI imdbAPI, RottenTomatoesAPI rottenTomatoesAPI, TraktTvAPI traktTvAPI) {
         this.integrationRepository = integrationRepository;
         this.statusRepository = statusRepository;
         this.alloCineAPI = alloCineAPI;
@@ -89,7 +85,26 @@ public class IntegrationService {
         return true;
     }
 
+    /**
+     * Create or Update coming soon movies
+     *
+     * @return true if the operation ended successfully
+     */
+    public boolean updateComingSoonMovie() {
+        List<Movie> movies = alloCineAPI.findComingSoon();
+        for (Movie movie : movies) {
+            integrationRepository.saveMovie(movie);
+        }
 
+        updateMovieFullDetail();
+        updateImdbId();
+        updateTraktTvInformation();
+        return true;
+    }
+
+    /**
+     * update the movie with full details from allo cine API
+     */
     private void updateMovieFullDetail() {
         //select movies without full information
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "updateMovieFullDetail");
@@ -202,17 +217,5 @@ public class IntegrationService {
         } finally {
             MetricManager.stopTimer(timer);
         }
-    }
-
-    public boolean updateComingSoonMovie() {
-        List<Movie> movies = alloCineAPI.findComingSoon();
-        for (Movie movie : movies) {
-            integrationRepository.saveMovie(movie);
-        }
-
-        updateImdbId();
-        updateTraktTvInformation();
-        updateMovieFullDetail();
-        return true;
     }
 }

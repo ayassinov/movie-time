@@ -2,6 +2,7 @@ package com.ninjas.movietime.service.manage;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.repository.manage.StatusRepository;
@@ -27,6 +28,7 @@ public class StatusService {
 
 
     public List<Movie> listMovieWithPropertyNotSet(String property) {
+        Preconditions.checkNotNull(property, "property name cannot be null");
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listMovieWithPropertyNotSet");
         try {
             return statusRepository.moviesWithPropertyNull(property);

@@ -23,6 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @ComponentScan
+@EnableAsync
 @EnableAutoConfiguration
 public class MovieTimeApplication implements CommandLineRunner {
 
