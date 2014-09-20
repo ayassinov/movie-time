@@ -46,7 +46,7 @@ public class MainResource {
         return mainService.listManageEndPoints();
     }
 
-    @RequestMapping(value = {"/", "/api", "api/${movietime.app.apiVersion}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/api", "api/v1"}, method = RequestMethod.GET)
     public Information main() throws Exception {
         MetricManager.markResourceMeter("root");
         return mainService.getAppInformation();

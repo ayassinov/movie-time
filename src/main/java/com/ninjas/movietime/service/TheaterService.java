@@ -19,12 +19,15 @@ package com.ninjas.movietime.service;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.domain.theater.TheaterChain;
 import com.ninjas.movietime.core.util.MetricManager;
+import com.ninjas.movietime.repository.TheaterChainRepository;
 import com.ninjas.movietime.repository.TheaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author ayassinov on 16/07/14
@@ -36,15 +39,19 @@ public class TheaterService {
 
     private final TheaterRepository theaterRepository;
 
+    private final TheaterChainRepository theaterChainRepository;
+
     @Autowired
-    public TheaterService(TheaterRepository theaterRepository) {
+    public TheaterService(TheaterRepository theaterRepository, TheaterChainRepository theaterChainRepository) {
         this.theaterRepository = theaterRepository;
+        this.theaterChainRepository = theaterChainRepository;
     }
 
-    public List<Theater> listAll() {
+    public Page<Theater> listAll(int page, int size) {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "getAppInformation");
         try {
-            return theaterRepository.findAll();
+            final Collection<TheaterChain> theaterChains = theaterChainRepository.listOfficialTheaterChainIds();
+            return theaterRepository.listByTheaterChain(theaterChains, page, size);
         } finally {
             MetricManager.stopTimer(timer);
         }

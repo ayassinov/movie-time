@@ -276,8 +276,8 @@ public class AlloCineAPI {
         final ShutDownStatus shutDownStatus;
         if (!node.path("shutdown").isMissingNode()) {
             shutDownStatus = new ShutDownStatus(
-                    DateUtils.parse(node.path("shutdown").path("dateStart").asText()),
-                    DateUtils.parse(node.path("shutdown").path("dateEnd").asText()));
+                    DateUtils.parseDateTime(node.path("shutdown").path("dateStart").asText()),
+                    DateUtils.parseDateTime(node.path("shutdown").path("dateEnd").asText()));
         } else {
             shutDownStatus = null;
         }

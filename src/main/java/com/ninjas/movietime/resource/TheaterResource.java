@@ -20,17 +20,17 @@ import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author ayassinov on 11/07/14
  */
 @RestController
-@RequestMapping("api/${movietime.app.apiVersion}/theater")
+@RequestMapping("api/v1/theater")
 public class TheaterResource {
 
     private final TheaterService theaterService;
@@ -40,9 +40,17 @@ public class TheaterResource {
         this.theaterService = theaterService;
     }
 
+    /**
+     * List page theater that are open and affiliated to a theater chain company that we track
+     *
+     * @param page the page from with we start
+     * @param size the size of the page
+     * @return Page of a theater
+     */
     @RequestMapping(method = RequestMethod.GET)
-    public List<Theater> all() {
+    public Page<Theater> all(@RequestParam(value = "page", required = true, defaultValue = "0") int page,
+                             @RequestParam(value = "size", required = true, defaultValue = "10") int size) {
         MetricManager.markResourceMeter("theater", "all");
-        return theaterService.listAll();
+        return theaterService.listAll(page, size);
     }
 }

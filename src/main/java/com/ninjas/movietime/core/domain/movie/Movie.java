@@ -17,6 +17,7 @@
 package com.ninjas.movietime.core.domain.movie;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ninjas.movietime.core.domain.showtime.Showtime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -110,5 +111,10 @@ public class Movie {
         this.releaseDate = releaseDate;
         this.runtime = runtime;
         this.rating = rating;
+    }
+
+    @JsonProperty
+    public String releaseDateText(){
+        return this.releaseDate.toString();
     }
 }

@@ -16,26 +16,38 @@
 
 package com.ninjas.movietime.core.domain.theater;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.Date;
+import org.joda.time.DateTime;
 
 /**
  * @author ayassinov
  */
 @Getter
 @ToString
+@JsonPropertyOrder({"dateStart", "dateEnd", "dateStartText", "dateEndText"})
 @EqualsAndHashCode(of = {"dateStart", "dateEnd"})
 public class ShutDownStatus {
 
-    private final Date dateStart;
+    private final DateTime dateStart;
 
-    private final Date dateEnd;
+    private final DateTime dateEnd;
 
-    public ShutDownStatus(Date dateStart, Date dateEnd) {
+    public ShutDownStatus(DateTime dateStart, DateTime dateEnd) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
+    }
+
+    @JsonProperty
+    public String getDateStartText() {
+        return dateStart.toString();
+    }
+
+    @JsonProperty
+    public String getDateEndText() {
+        return dateEnd.toString();
     }
 }

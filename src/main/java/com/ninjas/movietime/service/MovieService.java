@@ -6,9 +6,8 @@ import com.ninjas.movietime.core.domain.movie.Movie;
 import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author ayassinov on 29/08/2014.
@@ -25,8 +24,8 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public List<Movie> listComingSoon(int page, int countPerPage) {
-        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "getAppInformation");
+    public Page<Movie> listComingSoon(int page, int countPerPage) {
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listComingSoon");
         try {
             return movieRepository.listComingSoon(page, countPerPage);
         } finally {
@@ -34,4 +33,12 @@ public class MovieService {
         }
     }
 
+    public Page<Movie> listOpeningThisWeek(int page, int countPerPage) {
+        final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listOpeningThisWeek");
+        try {
+            return movieRepository.listOpeningThisWeek(page, countPerPage);
+        } finally {
+            MetricManager.stopTimer(timer);
+        }
+    }
 }

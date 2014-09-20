@@ -16,32 +16,40 @@
 
 package com.ninjas.movietime.repository;
 
+import com.google.common.base.Preconditions;
 import com.ninjas.movietime.core.domain.theater.Theater;
 import com.ninjas.movietime.core.domain.theater.TheaterChain;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author ayassinov on 16/07/14
  */
 @Repository
-public interface TheaterRepository extends MongoRepository<Theater, String> {
-    // We can use any combination of :
-    // Distinct, Between, LessThan, GreaterThan, Like, AND, OR,  IgnoreCase, AllIgnoreCase,  OrderBy, Asc, Desc
-    //
-
-    /**
-     * Find movieTheatre by name like ignore case and order by name asc
-     *
-     * @param name the name of theatre
-     * @return list of theatre ordered by name
-     */
-    List<Theater> findByNameLikeIgnoreCaseOrderByNameAsc(String name);
+public class TheaterRepository extends BaseRepository {
 
 
-    List<Theater> findByGeoLocationLongitude(double longitude);
+    @Autowired
+    public TheaterRepository(MongoTemplate mongoTemplate) {
+        super(mongoTemplate);
+    }
 
-    List<Theater> findByTheaterChain(TheaterChain theaterChain);
+
+    public Page<Theater> listByTheaterChain(Collection<TheaterChain> theaterChains, int page, int size) {
+        Preconditions.checkArgument(theaterChains.size() > 0, "Theater Chain list cannot be empty");
+        final Pageable pageable = new PageRequest(page, size, new Sort(Sort.Direction.ASC, "name"));
+        final Query query = Query.query(Criteria.where("theaterChain").in(theaterChains));
+        return findPaged(pageable, query, Theater.class);
+    }
+
+
 }
