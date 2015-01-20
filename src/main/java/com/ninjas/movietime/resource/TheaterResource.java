@@ -16,15 +16,15 @@
 
 package com.ninjas.movietime.resource;
 
+import com.google.common.base.Optional;
 import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.domain.theater.TheaterChain;
 import com.ninjas.movietime.core.util.MetricManager;
 import com.ninjas.movietime.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.geo.GeoPage;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author ayassinov on 11/07/14
@@ -48,9 +48,29 @@ public class TheaterResource {
      * @return Page of a theater
      */
     @RequestMapping(method = RequestMethod.GET)
-    public Page<Theater> all(@RequestParam(value = "page", required = true, defaultValue = "0") int page,
-                             @RequestParam(value = "size", required = true, defaultValue = "10") int size) {
+    public Page<Theater> all(@RequestParam(value = "page", defaultValue = "0") int page,
+                             @RequestParam(value = "size", defaultValue = "10") int size) {
         MetricManager.markResourceMeter("theater", "all");
         return theaterService.listAll(page, size);
+    }
+
+
+    public GeoPage<Theater> listByLatLong(@RequestParam(value = "lat") double latitude,
+                                       @RequestParam("long") double longitude,
+                                       @RequestParam(value = "page", defaultValue = "0") int page,
+                                       @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        return theaterService.listByGeoLocation(latitude, longitude, page, size);
+    }
+
+    @RequestMapping(value = "chain", method = RequestMethod.GET)
+    public Page<TheaterChain> listTheaterChain(@RequestParam(value = "page", required = true, defaultValue = "0") int page,
+                                               @RequestParam(value = "size", required = true, defaultValue = "10") int size) {
+        return theaterService.listAllTheaterChain(page, size);
+    }
+
+    @RequestMapping(value = "chain/{id}", method = RequestMethod.GET)
+    public Optional<TheaterChain> getTheaterChain(@PathVariable("id") String id) {
+        return theaterService.getTheaterChain(id);
     }
 }

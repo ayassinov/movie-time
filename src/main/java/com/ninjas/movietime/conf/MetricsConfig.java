@@ -35,6 +35,8 @@ public class MetricsConfig {
     @Bean
     @Scope(value = "singleton")
     public Client getBugSnagClient() {
+        if (configuration.getApp().getMode().equals(MovieTimeConfig.RunModeEnum.TEST))
+            return null;
         Client bugSnag = new Client(configuration.getApp().getBugSnag());
         //set the current version
         bugSnag.setAppVersion(configuration.getApp().getVersion());

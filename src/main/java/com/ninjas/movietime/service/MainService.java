@@ -7,8 +7,6 @@ import com.ninjas.movietime.MovieTimeConfig;
 import com.ninjas.movietime.core.domain.api.Information;
 import com.ninjas.movietime.core.util.MetricManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,13 +21,10 @@ public class MainService {
     private final String className = this.getClass().getCanonicalName();
 
     private final MovieTimeConfig config;
-    private final EndpointHandlerMapping endpointHandlerMapping;
 
     @Autowired
-    public MainService(MovieTimeConfig config,
-                       @SuppressWarnings("SpringJavaAutowiringInspection") EndpointHandlerMapping endpointHandlerMapping) {
+    public MainService(MovieTimeConfig config) {
         this.config = config;
-        this.endpointHandlerMapping = endpointHandlerMapping;
     }
 
     public Information getAppInformation() {
@@ -47,8 +42,7 @@ public class MainService {
         final Optional<Timer.Context> timer = MetricManager.startTimer(className, "listManageEndPoints");
         try {
             final List<String> endpoints = new ArrayList<>();
-            for (MvcEndpoint endpoint : endpointHandlerMapping.getEndpoints())
-                endpoints.add(endpoint.getPath());
+            //todo list all manage endPoints
             endpoints.add("/task");
             endpoints.add("/status");
             return endpoints;

@@ -37,9 +37,11 @@ import java.util.List;
 @Getter
 @ToString
 @TypeAlias("theaterChains")
-@Document(collection = "theaterChain")
+@Document(collection = TheaterChain.DOCUMENT_NAME)
 @EqualsAndHashCode(of = "id")
 public class TheaterChain {
+
+    public final static String DOCUMENT_NAME = "theaterChain";
 
     private static final List<String> OFFICIAL_THEATER_CHAIN = ImmutableList
             .of("81001") //UGC only for now

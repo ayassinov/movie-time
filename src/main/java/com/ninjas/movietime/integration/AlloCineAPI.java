@@ -264,10 +264,6 @@ public class AlloCineAPI {
                 node.path("cinemaChain").path("$").asText()
         );
 
-        final GeoLocation geoLocation = new GeoLocation(
-                node.path("geoloc").path("lat").asDouble(),
-                node.path("geoloc").path("long").asDouble());
-
         final Address address = new Address(
                 node.path("address").asText(),
                 node.path("city").asText(),
@@ -283,6 +279,6 @@ public class AlloCineAPI {
         }
 
         return new Theater(node.path("code").asText(), node.path("name").asText(),
-                geoLocation, address, theaterChain, shutDownStatus);
+                node.path("geoloc").path("lat").asDouble(), node.path("geoloc").path("long").asDouble(), address, theaterChain, shutDownStatus);
     }
 }

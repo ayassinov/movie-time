@@ -16,26 +16,11 @@
 
 package com.ninjas.movietime.core.domain;
 
-import com.ninjas.movietime.core.domain.theater.GeoLocation;
-import com.ninjas.movietime.core.domain.theater.Theater;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-
 /**
  * @author ayassinov on 16/07/14
  */
 public class TheaterTest {
 
 
-    @Test
-    public void testEquals() {
-        final Theater theaterA = new Theater("1", "A", new GeoLocation(1.0, 1.0), null, null, null);
-        final Theater theaterB = new Theater("1", "B", new GeoLocation(1.0, 1.0), null, null, null);
-        final Theater theaterC = new Theater("2", "A", new GeoLocation(1.0, 1.0), null, null, null);
-        assertThat(theaterA, equalTo(theaterB));
-        assertThat(theaterA, not(equalTo(theaterC)));
-    }
+
 }

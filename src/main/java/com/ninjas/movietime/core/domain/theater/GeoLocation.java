@@ -17,10 +17,12 @@
 package com.ninjas.movietime.core.domain.theater;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.geo.Point;
 
 /**
  * @author ayassinov on 16/07/14
@@ -30,14 +32,18 @@ import lombok.ToString;
 @EqualsAndHashCode(of = {"longitude", "latitude"})
 public class GeoLocation {
 
+    private final double longitude;
+
     private final double latitude;
 
-    private final double longitude;
+    @JsonIgnore
+    private final Point point;
 
     @JsonCreator
     public GeoLocation(@JsonProperty("lat") double latitude,
                        @JsonProperty("long") double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.point = new Point(longitude, latitude);
     }
 }

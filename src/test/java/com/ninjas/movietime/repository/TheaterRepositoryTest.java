@@ -17,12 +17,32 @@
 package com.ninjas.movietime.repository;
 
 import com.ninjas.movietime.BaseTest;
-import org.junit.Ignore;
+import com.ninjas.movietime.core.domain.theater.Theater;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.geo.GeoPage;
+import org.springframework.data.geo.Point;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author ayassinov on 16/07/14
  */
-@Ignore
 public class TheaterRepositoryTest extends BaseTest {
+
+    @Autowired
+    private TheaterRepository theaterRepository;
+
+    @Test
+    public void listByGeoLocation() {
+        final GeoPage<Theater> theaters = theaterRepository.listByGeoLocation(
+                new Point(48.88366, 2.3272),
+                new PageRequest(0, 2));
+        assertThat(theaters.getContent(), not(empty()));
+        assertThat(theaters.getContent().size(), is(2));
+    }
 }

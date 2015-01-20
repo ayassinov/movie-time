@@ -25,6 +25,10 @@ import com.ninjas.movietime.repository.TheaterChainRepository;
 import com.ninjas.movietime.repository.TheaterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.GeoPage;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -55,5 +59,20 @@ public class TheaterService {
         } finally {
             MetricManager.stopTimer(timer);
         }
+    }
+
+    public Page<TheaterChain> listAllTheaterChain(int page, int size) {
+        final PageRequest pageRequest = new PageRequest(page, size, Sort.Direction.ASC, "name");
+        return theaterChainRepository.listAll(pageRequest);
+    }
+
+    public Optional<TheaterChain> getTheaterChain(String id) {
+        return theaterChainRepository.getById(id);
+    }
+
+    public GeoPage<Theater> listByGeoLocation(double latitude, double longitude, int page, int size) {
+        final PageRequest pageRequest = new PageRequest(page, size);
+        final Point point = new Point(latitude, longitude);
+        return theaterRepository.listByGeoLocation(point, pageRequest);
     }
 }

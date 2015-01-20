@@ -49,7 +49,7 @@ public class MovieTimeApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!config.getApp().getMode().equals(MovieTimeConfig.RunModeEnum.PROD)) {
+        if (config.getApp().getMode().equals(MovieTimeConfig.RunModeEnum.PROD)) {
             final List<MovieTimeConfig.CronTask> cronTasks = config.getApp().getTasks();
             scheduledTasks.scheduleTasks(cronTasks);
         }

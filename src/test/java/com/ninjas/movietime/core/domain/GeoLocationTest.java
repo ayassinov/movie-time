@@ -28,13 +28,6 @@ import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
  */
 public class GeoLocationTest {
 
-    @Test
-    public void testEquals() {
-        final GeoLocation locA = new GeoLocation(1.0, 2.0);
-        final GeoLocation locB = new GeoLocation(1.0, 2.0);
-        final GeoLocation locC = new GeoLocation(2.0, 3.0);
-        assertThat(locA, equalTo(locB));
-        assertThat(locA, not(equalTo(locC)));
-    }
+
 
 }

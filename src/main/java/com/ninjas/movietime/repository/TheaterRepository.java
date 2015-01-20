@@ -24,8 +24,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.GeoPage;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -52,4 +57,21 @@ public class TheaterRepository extends BaseRepository {
     }
 
 
+    public GeoPage<Theater> listByGeoLocation(Point point, PageRequest pageRequest) {
+        Preconditions.checkNotNull(point);
+        Preconditions.checkNotNull(pageRequest);
+
+        final NearQuery nearQuery = NearQuery.near(point)
+                .spherical(true)
+                .maxDistance(1, Metrics.KILOMETERS)
+                .with(pageRequest);
+
+        //final int size = getMongoTemplate().geoNear(nearQuery, Theater.class).getContent().size();
+
+        final GeoResults<Theater> geoResults = getMongoTemplate().geoNear(nearQuery, Theater.class);
+
+        final GeoPage<Theater> geoPage = new GeoPage<>(geoResults, pageRequest, 0);
+
+        return geoPage;
+    }
 }

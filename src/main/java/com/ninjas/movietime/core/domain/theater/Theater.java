@@ -22,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -48,7 +49,7 @@ public class Theater {
     //@Indexed(name = "idx_name", unique = false)
     private String name;
 
-    private GeoLocation geoLocation;
+    private double[] location;
 
     private Address address;
 
@@ -69,11 +70,22 @@ public class Theater {
         this.id = id;
     }
 
-    public Theater(String id, String name, GeoLocation geoLocation, Address address,
+    @PersistenceConstructor
+    public Theater(String name, double[] location, Address address,
+                   TheaterChain theaterChain, ShutDownStatus shutDownStatus) {
+        super();
+        this.name = name;
+        this.location = location;
+        this.address = address;
+        this.theaterChain = theaterChain;
+        this.shutDownStatus = shutDownStatus;
+    }
+
+    public Theater(String id, String name, double locationLat, double locationLong, Address address,
                    TheaterChain theaterChain, ShutDownStatus shutDownStatus) {
         this.id = id;
         this.name = name;
-        this.geoLocation = geoLocation;
+        this.location = new double[]{locationLat, locationLong};
         this.address = address;
         this.theaterChain = theaterChain;
         this.shutDownStatus = shutDownStatus;
