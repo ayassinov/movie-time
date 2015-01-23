@@ -17,16 +17,17 @@
 package com.ninjas.movietime.repository;
 
 import com.ninjas.movietime.BaseTest;
+import com.ninjas.movietime.core.domain.theater.Address;
 import com.ninjas.movietime.core.domain.theater.Theater;
+import com.ninjas.movietime.core.domain.theater.TheaterChain;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.geo.GeoPage;
 import org.springframework.data.geo.Point;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -36,6 +37,14 @@ public class TheaterRepositoryTest extends BaseTest {
 
     @Autowired
     private TheaterRepository theaterRepository;
+
+    @Before
+    public void init() {
+        final Theater theater = new Theater("AAA", "TEST Theater", 48.88366, 2.3272,
+                new Address("roses street", "Paris", "75014"),
+                new TheaterChain("111", "UGC"), null);
+        theaterRepository.getMongoTemplate().save(theater);
+    }
 
     @Test
     public void listByGeoLocation() {
