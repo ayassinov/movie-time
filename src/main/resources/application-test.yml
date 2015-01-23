@@ -1,6 +1,7 @@
 movietime:
   app:
     mode: TEST
+    enableSecurity: false
   mongo:
     url: mongodb://localhost/test
     writeResultChecking: EXCEPTION

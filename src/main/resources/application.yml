@@ -6,6 +6,7 @@ movietime:
     apiVersion: v1
     responseFormat: application/json;utf-8
     bugSnag: 16f3943bcff62960d25dcf14053efb98
+    enableSecurity: true
     taskPool:
       corePoolSize: 5
       maxPoolSize: 10
