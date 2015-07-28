@@ -1,0 +1,20 @@
+movietime:
+  app:
+    mode: PROD
+    esUrl: https://bf4bay8g:21p8huoxv8kc13y4@apple-5840.eu-west-1.bonsai.io:443/
+    enableSecurity: true
+  mongo:
+    url: mongodb://movietime:ada548851f5sad8adza5sgearcs323@ds033170.mongolab.com:33170/heroku_app27658792
+    writeResultChecking: EXCEPTION
+  graphite:
+    activate: true
+  client:
+    readTimeOut: 5000
+    connectTimeout: 3000
+    activateMetrics: true
+error:
+  whitelabel:
+    enabled: false
+health:
+  mongodb:
+    enabled: false

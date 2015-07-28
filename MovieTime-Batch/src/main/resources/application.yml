@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost/hellocinedb
+     # host: mongoserver
+     # port: 27017
